@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="exam" />
+        <module name="dao" />
+        <module name="pc" />
+        <module name="phone" />
+        <module name="service" />
+        <module name="bean" />
+        <module name="manage" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="bean" target="1.5" />
+      <module name="dao" target="1.8" />
+      <module name="exam" target="1.8" />
+      <module name="licangsifa-falvfagui-web" target="1.8" />
+      <module name="manage" target="1.8" />
+      <module name="pc" target="1.8" />
+      <module name="phone" target="1.8" />
+      <module name="service" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

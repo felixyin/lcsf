@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.SysSeatMapper">
+    <resultMap id="BaseResultMap" type="com.hzc.model.SysSeat">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="resource_id" property="resourceId" jdbcType="INTEGER"/>
+        <result column="seat_no" property="seatNo" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, resource_id, seat_no, update_time
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_seat
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_seat
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.hzc.model.SysSeat">
+    insert into sys_seat (id, user_id, resource_id, 
+      seat_no, update_time)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{resourceId,jdbcType=INTEGER}, 
+      #{seatNo,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.hzc.model.SysSeat">
+        insert into sys_seat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="resourceId != null">
+                resource_id,
+            </if>
+            <if test="seatNo != null">
+                seat_no,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="resourceId != null">
+                #{resourceId,jdbcType=INTEGER},
+            </if>
+            <if test="seatNo != null">
+                #{seatNo,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.SysSeat">
+        update sys_seat
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="resourceId != null">
+                resource_id = #{resourceId,jdbcType=INTEGER},
+            </if>
+            <if test="seatNo != null">
+                seat_no = #{seatNo,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hzc.model.SysSeat">
+    update sys_seat
+    set user_id = #{userId,jdbcType=INTEGER},
+      resource_id = #{resourceId,jdbcType=INTEGER},
+      seat_no = #{seatNo,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="select" resultType="com.hzc.model.SysSeat">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        sys_seat
+    </select>
+    <select id="selectEmpty" resultType="com.hzc.vo.SysSeatVO">
+        SELECT
+            ss.id id,
+            ss.user_id userId,
+            ss.resource_id resourceId,
+            ss.seat_no seatNo,
+            ss.update_time updateTime,
+            sr.start_time startTime,
+            sr.end_time endTime,
+            sr.room_no roomNo,
+            sr.room_address roomAddress
+        FROM
+            sys_seat ss
+        LEFT JOIN sys_resource sr ON ss.resource_id = sr.id
+        WHERE ss.user_id is null
+    </select>
+    <insert id="insertAllSeats">
+        INSERT INTO
+        sys_seat
+        (resource_id,seat_no)
+        VALUES
+        <foreach collection="list" item="seat" separator=",">
+            (#{seat.resourceId},#{seat.seatNo})
+        </foreach>
+    </insert>
+    <update id="updateEmptySeat">
+        REPLACE INTO sys_seat (id, user_id,resource_id,seat_no,update_time)
+        VALUES
+        <foreach collection="list" item="seat" separator=",">
+            (#{seat.id},#{seat.userId},#{seat.resourceId},#{seat.seatNo},#{seat.updateTime})
+        </foreach>
+
+    </update>
+</mapper>

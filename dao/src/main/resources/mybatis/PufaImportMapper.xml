@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.PufaImportMapper">
+    <resultMap id="BaseResultMap" type="com.hzc.model.PufaImport">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="seq" property="seq" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="option_a" property="optionA" jdbcType="VARCHAR"/>
+        <result column="option_b" property="optionB" jdbcType="VARCHAR"/>
+        <result column="option_c" property="optionC" jdbcType="VARCHAR"/>
+        <result column="option_d" property="optionD" jdbcType="VARCHAR"/>
+        <result column="option_e" property="optionE" jdbcType="VARCHAR"/>
+        <result column="answer" property="answer" jdbcType="VARCHAR"/>
+        <result column="source" property="source" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, seq, type, name, option_a, option_b, option_c, option_d, option_e, answer, source
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from pufa_import
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from pufa_import
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.hzc.model.PufaImport">
+    insert into pufa_import (id, seq, type, 
+      name, option_a, option_b, 
+      option_c, option_d, option_e, 
+      answer, source)
+    values (#{id,jdbcType=INTEGER}, #{seq,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{optionA,jdbcType=VARCHAR}, #{optionB,jdbcType=VARCHAR}, 
+      #{optionC,jdbcType=VARCHAR}, #{optionD,jdbcType=VARCHAR}, #{optionE,jdbcType=VARCHAR}, 
+      #{answer,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.hzc.model.PufaImport">
+        insert into pufa_import
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="seq != null">
+                seq,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="optionA != null">
+                option_a,
+            </if>
+            <if test="optionB != null">
+                option_b,
+            </if>
+            <if test="optionC != null">
+                option_c,
+            </if>
+            <if test="optionD != null">
+                option_d,
+            </if>
+            <if test="optionE != null">
+                option_e,
+            </if>
+            <if test="answer != null">
+                answer,
+            </if>
+            <if test="source != null">
+                source,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="seq != null">
+                #{seq,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="optionA != null">
+                #{optionA,jdbcType=VARCHAR},
+            </if>
+            <if test="optionB != null">
+                #{optionB,jdbcType=VARCHAR},
+            </if>
+            <if test="optionC != null">
+                #{optionC,jdbcType=VARCHAR},
+            </if>
+            <if test="optionD != null">
+                #{optionD,jdbcType=VARCHAR},
+            </if>
+            <if test="optionE != null">
+                #{optionE,jdbcType=VARCHAR},
+            </if>
+            <if test="answer != null">
+                #{answer,jdbcType=VARCHAR},
+            </if>
+            <if test="source != null">
+                #{source,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.PufaImport">
+        update pufa_import
+        <set>
+            <if test="seq != null">
+                seq = #{seq,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="optionA != null">
+                option_a = #{optionA,jdbcType=VARCHAR},
+            </if>
+            <if test="optionB != null">
+                option_b = #{optionB,jdbcType=VARCHAR},
+            </if>
+            <if test="optionC != null">
+                option_c = #{optionC,jdbcType=VARCHAR},
+            </if>
+            <if test="optionD != null">
+                option_d = #{optionD,jdbcType=VARCHAR},
+            </if>
+            <if test="optionE != null">
+                option_e = #{optionE,jdbcType=VARCHAR},
+            </if>
+            <if test="answer != null">
+                answer = #{answer,jdbcType=VARCHAR},
+            </if>
+            <if test="source != null">
+                source = #{source,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hzc.model.PufaImport">
+    update pufa_import
+    set seq = #{seq,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      option_a = #{optionA,jdbcType=VARCHAR},
+      option_b = #{optionB,jdbcType=VARCHAR},
+      option_c = #{optionC,jdbcType=VARCHAR},
+      option_d = #{optionD,jdbcType=VARCHAR},
+      option_e = #{optionE,jdbcType=VARCHAR},
+      answer = #{answer,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM pufa_import
+    </select>
+</mapper>

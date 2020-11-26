@@ -1,0 +1,24 @@
+version: "3.3"
+
+services:
+  pc:
+    build: .
+    ports:
+      - 10002:8080
+    volumes:
+      - "/home/fy/workspaces/items/licangsifa-falvfagui-web/docker-tomcat-data/conf:/usr/local/tomcat/conf"
+      - "/home/fy/workspaces/items/licangsifa-falvfagui-web/pc/target/pc.war:/usr/local/tomcat/webapps/ROOT.war"
+  exam:
+    build: .
+    ports:
+      - 10003:8080
+    volumes:
+      - "/home/fy/workspaces/items/licangsifa-falvfagui-web/docker-tomcat-data/conf:/usr/local/tomcat/conf"
+      - "/home/fy/workspaces/items/licangsifa-falvfagui-web/exam/target/exam.war:/usr/local/tomcat/webapps/ROOT.war"
+  manage:
+    build: .
+    ports:
+      - 10004:8080
+    volumes:
+      - "/home/fy/workspaces/items/licangsifa-falvfagui-web/docker-tomcat-data/conf:/usr/local/tomcat/conf"
+      - "/home/fy/workspaces/items/licangsifa-falvfagui-web/manage/target/manage.war:/usr/local/tomcat/webapps/ROOT.war"

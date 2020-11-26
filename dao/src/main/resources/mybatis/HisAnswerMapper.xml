@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.HisAnswerMapper">
+    <resultMap id="BaseResultMap" type="com.hzc.model.HisAnswer">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="question_id" property="questionId" jdbcType="INTEGER"/>
+        <result column="collect_times" property="collectTimes" jdbcType="INTEGER"/>
+        <result column="answer_times" property="answerTimes" jdbcType="INTEGER"/>
+        <result column="sty_bm_times" property="styBmTimes" jdbcType="INTEGER"/>
+        <result column="sty_clt_times" property="styCltTimes" jdbcType="INTEGER"/>
+        <result column="sty_times" property="styTimes" jdbcType="INTEGER"/>
+        <result column="effect_answer_times" property="effectAnswerTimes" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="deleted" property="deleted" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, question_id, collect_times, answer_times, sty_bm_times, sty_clt_times,sty_times,effect_answer_times, create_time, update_time,
+    deleted
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from his_answer
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from his_answer
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.hzc.model.HisAnswer">
+    insert into his_answer (id, user_id, question_id,
+    collect_times, answer_times, sty_bm_times, sty_clt_times,sty_times,effect_answer_times, create_time,
+    update_time, deleted)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{questionId,jdbcType=INTEGER},
+    #{collectTimes,jdbcType=INTEGER}, #{answerTimes,jdbcType=INTEGER},
+    #{styBmTimes,jdbcType=INTEGER}, #{styCltTimes,jdbcType=INTEGER},#{styTimes,jdbcType=INTEGER},#{effectAnswerTimes,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+    #{updateTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.hzc.model.HisAnswer">
+        insert into his_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="questionId != null">
+                question_id,
+            </if>
+            <if test="collectTimes != null">
+                collect_times,
+            </if>
+
+            <if test="answerTimes != null">
+                answer_times,
+            </if>
+            <if test="styBmTimes != null">
+                sty_bm_times,
+            </if>
+            <if test="styCltTimes != null">
+                sty_clt_times,
+            </if>
+            <if test="styTimes != null">
+                sty_times,
+            </if>
+            <if test="effectAnswerTimes != null">
+                effect_answer_times,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="deleted != null">
+                deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="questionId != null">
+                #{questionId,jdbcType=INTEGER},
+            </if>
+            <if test="collectTimes != null">
+                #{collectTimes,jdbcType=INTEGER},
+            </if>
+            <if test="answerTimes != null">
+                #{answerTimes,jdbcType=INTEGER},
+            </if>
+            <if test="styBmTimes != null">
+                #{styBmTimes,jdbcType=INTEGER},
+            </if>
+            <if test="styCltTimes != null">
+                #{styCltTimes,jdbcType=INTEGER},
+            </if>
+            <if test="styTimes != null">
+                #{styTimes,jdbcType=INTEGER},
+            </if>
+            <if test="effectAnswerTimes != null">
+                #{effectAnswerTimes,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.HisAnswer">
+        update his_answer
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="questionId != null">
+                question_id = #{questionId,jdbcType=INTEGER},
+            </if>
+            <if test="collectTimes != null">
+                collect_times = #{collectTimes,jdbcType=INTEGER},
+            </if>
+            <if test="answerTimes != null">
+                answer_times = #{answerTimes,jdbcType=INTEGER},
+            </if>
+            <if test="styBmTimes != null">
+                sty_bm_times = #{styBmTimes,jdbcType=INTEGER},
+            </if>
+            <if test="styCltTimes != null">
+                sty_clt_times = #{styCltTimes,jdbcType=INTEGER},
+            </if>
+            <if test="styCltTimes != null">
+                sty_times = #{styTimes,jdbcType=INTEGER},
+            </if>
+            <if test="effectAnswerTimes != null">
+                effect_answer_times = #{effectAnswerTimes,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hzc.model.HisAnswer">
+    update his_answer
+    set user_id = #{userId,jdbcType=INTEGER},
+      question_id = #{questionId,jdbcType=INTEGER},
+      collect_times = #{collectTimes,jdbcType=INTEGER},
+      answer_times = #{answerTimes,jdbcType=INTEGER},
+      sty_bm_times = #{styBmTimes,jdbcType=INTEGER},
+      sty_clt_times = #{styCltTimes,jdbcType=INTEGER},
+      sty_times = #{styTimes,jdbcType=INTEGER},
+      effect_answer_times = #{effectAnswerTimes,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="updateAnswerInfoByUserIdAndQuestionId">
+        update his_answer
+        <set>
+            collect_times = collect_times + #{collectTimes,jdbcType=INTEGER},
+            answer_times = answer_times + 1
+        </set>
+        where
+        user_id = #{userId,jdbcType=INTEGER}
+        and
+        question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByUserIdAndQuestionId" resultType="com.hzc.model.HisAnswer">
+        select
+        <include refid="Base_Column_List"/>
+        from his_answer
+        WHERE user_id = #{userId} and question_id = #{questionId}
+    </select>
+    <select id="selectTimesByUserId" resultType="map">
+   SELECT
+   	IFNULL(sum(ha.effect_answer_times),0) AS effectAnswerTimes,
+   	IFNULL(sum(ha.sty_times),0) AS styTimes,
+    IFNULL(sum(ha.sty_bm_times),0) AS styBmTimes,
+    IFNULL(sum(ha.sty_clt_times),0) AS styCltTimes
+   FROM his_answer ha
+   WHERE  ha.user_id = #{userId,jdbcType=INTEGER}
+  </select>
+    <update id="updateAnswerTime">
+        update his_answer
+        <set>
+            sty_times = sty_times+1
+        </set>
+        where
+        user_id = #{userId,jdbcType=INTEGER}
+        AND
+        question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+    <update id="updateBMCLTTimes">
+        UPDATE his_answer
+        <set>
+            sty_bm_times = sty_bm_times + #{styBmTimes,jdbcType=INTEGER},
+            sty_clt_times = sty_clt_times + #{styCltTimes,jdbcType=INTEGER},
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+    <update id="addAnserTimes">
+        update his_answer
+        <set>
+            answer_times = IFNULL(answer_times,0) + 1
+        </set>
+        where
+        user_id = #{userId,jdbcType=INTEGER}
+        and
+        question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+    <update id="addStudyTimes">
+        update his_answer
+        <set>
+            sty_times = IFNULL(sty_times,0) + 1
+        </set>
+        where
+        user_id = #{userId,jdbcType=INTEGER}
+        and
+        question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+    <!--answer_times = IFNULL(answer_times,0) + 1,-->
+    <update id="addCollectTimes">
+        update his_answer
+        <set>
+            collect_times = IFNULL(collect_times,0) + 1
+        </set>
+        where
+        user_id = #{userId,jdbcType=INTEGER}
+        and
+        question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+    <update id="addTimesForBookmark">
+        UPDATE his_answer ha
+        <set>
+            ha.sty_bm_times = IFNULL(ha.sty_bm_times,0) + 1
+        </set>
+        WHERE
+        ha.user_id = #{userId,jdbcType=INTEGER}
+        and
+        ha.question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+    <update id="addTimesForError">
+        UPDATE his_answer ha
+        <set>
+            ha.sty_clt_times = IFNULL(ha.sty_clt_times,0) + 1
+        </set>
+        WHERE
+        ha.user_id = #{userId,jdbcType=INTEGER}
+        and
+        ha.question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+    <update id="addEffectAnswerTimes">
+        UPDATE his_answer ha
+        <set>
+            ha.effect_answer_times = IFNULL(ha.effect_answer_times,0) + 1
+        </set>
+        WHERE
+        ha.user_id = #{userId,jdbcType=INTEGER}
+        and
+        ha.question_id = #{questionId,jdbcType=INTEGER}
+    </update>
+
+    <update id="subtractStyTimes">
+        UPDATE his_answer
+        <set>
+            sty_times = sty_times-1
+        </set>
+        WHERE
+        user_id = #{userId,jdbcType=INTEGER}
+        AND question_id=#{questionId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectExamQuestion" resultType="java.util.Map">
+        (
+            SELECT
+                ha.question_id,
+                sum(ha.collect_times) / sum(ha.effect_answer_times) AS accuracy
+            FROM
+                his_answer ha
+            INNER JOIN lp_question lq ON ha.question_id = lq.id
+            WHERE
+                lq.type = '判断题'
+            GROUP BY
+                ha.question_id
+            ORDER BY
+                accuracy DESC
+            LIMIT 0,
+            100
+        )
+        UNION ALL
+            (
+                SELECT
+                    ha.question_id,
+                    sum(ha.collect_times) / sum(ha.effect_answer_times) AS accuracy
+                FROM
+                    his_answer ha
+                INNER JOIN lp_question lq ON ha.question_id = lq.id
+                WHERE
+                    lq.type = '单选题'
+                GROUP BY
+                    ha.question_id
+                ORDER BY
+                    accuracy DESC
+                LIMIT 0,
+                100
+            )
+        UNION ALL
+            (
+                SELECT
+                    ha.question_id,
+                    sum(ha.collect_times) / sum(ha.effect_answer_times) AS accuracy
+                FROM
+                    his_answer ha
+                INNER JOIN lp_question lq ON ha.question_id = lq.id
+                WHERE
+                    lq.type = '多选题'
+                GROUP BY
+                    ha.question_id
+                ORDER BY
+                    accuracy DESC
+                LIMIT 0,
+                100
+            )
+    </select>
+    <insert id="genExamRepo">
+        INSERT INTO gen_exam_repo (question_id, accuracy)(
+            SELECT
+                ha.question_id,
+                sum(ha.collect_times) / sum(ha.effect_answer_times) AS accuracy
+            FROM
+                his_answer ha
+            INNER JOIN lp_question lq ON ha.question_id = lq.id
+            WHERE
+                lq.type = '判断题'
+            GROUP BY
+                ha.question_id
+            ORDER BY
+                accuracy DESC
+            LIMIT 0,
+            #{panDuan,jdbcType=INTEGER}
+        )
+        UNION ALL
+            (
+                SELECT
+                    ha.question_id,
+                    sum(ha.collect_times) / sum(ha.effect_answer_times) AS accuracy
+                FROM
+                    his_answer ha
+                INNER JOIN lp_question lq ON ha.question_id = lq.id
+                WHERE
+                    lq.type = '单选题'
+                GROUP BY
+                    ha.question_id
+                ORDER BY
+                    accuracy DESC
+                LIMIT 0,
+                #{danXuan,jdbcType=INTEGER}
+            )
+        UNION ALL
+            (
+                SELECT
+                    ha.question_id,
+                    sum(ha.collect_times) / sum(ha.effect_answer_times) AS accuracy
+                FROM
+                    his_answer ha
+                INNER JOIN lp_question lq ON ha.question_id = lq.id
+                WHERE
+                    lq.type = '多选题'
+                GROUP BY
+                    ha.question_id
+                ORDER BY
+                    accuracy DESC
+                LIMIT 0,
+                #{duoXuan,jdbcType=INTEGER}
+            )
+    </insert>
+</mapper>

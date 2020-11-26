@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.GenExamRepoMapper" >
+  <resultMap id="BaseResultMap" type="com.hzc.model.GenExamRepo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="question_id" property="questionId" jdbcType="INTEGER" />
+    <result column="accuracy" property="accuracy" jdbcType="REAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, question_id, accuracy
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gen_exam_repo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gen_exam_repo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.hzc.model.GenExamRepo" >
+    insert into gen_exam_repo (id, question_id, accuracy
+      )
+    values (#{id,jdbcType=INTEGER}, #{questionId,jdbcType=INTEGER}, #{accuracy,jdbcType=REAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hzc.model.GenExamRepo" >
+    insert into gen_exam_repo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="questionId != null" >
+        question_id,
+      </if>
+      <if test="accuracy != null" >
+        accuracy,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="questionId != null" >
+        #{questionId,jdbcType=INTEGER},
+      </if>
+      <if test="accuracy != null" >
+        #{accuracy,jdbcType=REAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.GenExamRepo" >
+    update gen_exam_repo
+    <set >
+      <if test="questionId != null" >
+        question_id = #{questionId,jdbcType=INTEGER},
+      </if>
+      <if test="accuracy != null" >
+        accuracy = #{accuracy,jdbcType=REAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hzc.model.GenExamRepo" >
+    update gen_exam_repo
+    set question_id = #{questionId,jdbcType=INTEGER},
+      accuracy = #{accuracy,jdbcType=REAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <delete id="clear">
+    DELETE FROM gen_exam_repo
+  </delete>
+</mapper>

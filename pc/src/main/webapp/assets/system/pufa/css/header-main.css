@@ -1,0 +1,625 @@
+.modal-dialog {
+    padding-top: 10%;
+}
+
+.spinner-preview {
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    margin-top: 60px;
+}
+
+.dropdown-preview {
+    margin: 0 5px;
+    display: inline-block;
+}
+
+.dropdown-preview > .dropdown-menu {
+    display: block;
+    position: static;
+    margin-bottom: 5px;
+}
+
+.my-menu {
+    bottom: 2px;
+    position: absolute;
+    top: 112px;
+    right: 50px;
+}
+
+.my-menu li {
+    width: 140px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+input[type=radio].ace + .lbl::before {
+    border-radius: 100%;
+    font-size: 14px;
+    font-family: FontAwesome;
+    text-shadow: 0 0 1px #32a3ce;
+    line-height: 21px;
+    height: 23px;
+    min-width: 23px;
+}
+
+input[type=checkbox].ace + .lbl::before {
+    font-size: 14px;
+    text-shadow: 0 0 1px #1687D5;
+    line-height: 24px;
+    height: 23px;
+    min-width: 22px;
+}
+
+input[type=radio].ace-all + .lbl-all::before {
+    border-radius: 100%;
+    font-size: 14px !important;
+    font-family: FontAwesome;
+    text-shadow: 0 0 1px #1687D5;
+    line-height: 25px !important;
+    height: 25px !important;
+    min-width: 25px !important;
+}
+
+input[type=checkbox].ace-all + .lbl-all::before {
+    font-size: 14px !important;
+    text-shadow: 0 0 1px #1687D5;
+    line-height: 25px !important;
+    height: 25px !important;
+    min-width: 25px !important;
+}
+
+.my-menu-item-active {
+    height: 50px !important;
+    margin-top: -3px;
+    border-top-color: #f59942 !important;
+    border-top-width: 5px !important;
+}
+
+.my-menu-item-active > a {
+    /*padding-top: 0px !important;*/
+}
+
+.my-menu-item-active:active {
+    opacity: 0.6 !important;
+}
+
+/*
+.my-menu-item-active > a{
+    background-color: #1687d5 !important;
+    border-width: 0px!important;
+}
+*/
+
+.my-test-card {
+    min-width: 350px !important;
+}
+
+.my-test-info {
+    min-width: 200px !important;
+}
+
+.my-radio-all {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+}
+
+.my-control-group-all {
+    margin-top: -20px;
+    margin-left: 2%;
+}
+
+.my-widget-main-all {
+    border-top: 1px solid lightgray;
+}
+
+.my-widget-box-all {
+    margin-top: 20px;
+}
+
+.my-nav-tabs {
+    font-size: 15px;
+}
+
+.btn {
+    font-weight: bold;
+}
+
+/* 加粗选项卡 */
+.my-nav-tabs li a {
+    font-weight: bold;
+}
+
+.widget-header h4 {
+    font-weight: bold;
+}
+
+.my-btn-fenye {
+    border-radius: 30px;
+    width: 40px;
+    height: 40px;
+}
+
+.my-btn-fenye:focus {
+    border-color: #d3d3d3 !important;
+}
+
+.my-btn-tihao {
+    background-image: -webkit-linear-gradient(top, #ffffff 0%, #ffffff 100%) !important;
+    background-image: -moz-linear-gradient(top, #ffffff 0%, #ffffff 100%) !important;
+    background-image: -ms-linear-gradient(top, #ffffff 0%, #ffffff 100%) !important;
+    background-image: -o-linear-gradient(top, #ffffff 0%, #ffffff 100%) !important;
+    background-image: linear-gradient(top, #ffffff 0%, #ffffff 100%) !important;
+    border: 1px solid #d3d3d3 !important;
+    color: black !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    margin: 1px 1px 5px !important;
+    padding: 2px 0 !important;
+    width: 30px !important;
+    background-color: #ffffff !important;
+}
+
+.my-btn-tihao-answer {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
+    width: 30px !important;
+    padding: 2px 0px !important;
+    margin: 1px !important;
+    border: 1px solid #1687D5 !important;
+    background-color: #1687D5 !important;
+    background-image: -webkit-gradient(linear, left 0, left 100%, from(#1687D5), to(#1687D5)) !important;
+    background: linear-gradient(to bottom, #1687D5, #1687D5 100%) repeat-x scroll 0 0 #1687D5 !important;
+}
+
+.my-btn-tihao:hover {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    background-image: -webkit-gradient(linear, left 0, left 100%, from(#ffA500), to(#ffA500)) !important;
+    background: linear-gradient(to bottom, #ffA500, #ffA500 100%) repeat-x scroll 0 0 #ffA500 !important;
+    background-color: #ffA500 !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffA500', endColorstr='#ffA500', GradientType=0) !important;
+}
+
+.my-btn-tihao-un:hover {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    background-image: -webkit-gradient(linear, left 0, left 100%, from(#ffffff), to(#ffffff)) !important;
+    background: linear-gradient(to bottom, #ffffff, #ffffff 100%) repeat-x scroll 0 0 #ffffff !important;
+    background-color: #ffffff !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0) !important;
+}
+
+.my-btn-tihao-do:hover {
+    color: #1687D5 !important;
+    font-weight: 800 !important;
+    background-image: -webkit-gradient(linear, left 0, left 100%, from(#1687D5), to(#1687D5)) !important;
+    background: linear-gradient(to bottom, #1687D5, #1687D5 100%) repeat-x scroll 0 0 #1687D5 !important;
+    background-color: #1687D5 !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1687D5', endColorstr='#1687D5', GradientType=0) !important;
+}
+
+.my-btn-tihao-cu:hover {
+    color: #FCC584 !important;
+    font-weight: 800 !important;
+    background-image: -webkit-gradient(linear, left 0, left 100%, from(#FCC584), to(#FCC584)) !important;
+    background: linear-gradient(to bottom, #FCC584, #FCC584 100%) repeat-x scroll 0 0 #FCC584 !important;
+    background-color: #FCC584 !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FCC584', endColorstr='#FCC584', GradientType=0) !important;
+}
+
+.my-radio {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 20px;
+    border: 1px solid #d0f6e3;
+    min-height: 50px !important;
+    max-height: 100px !important;
+}
+
+.my-radio-disable {
+    padding-top: 10px;
+    padding-bottom: 5px;
+    font-size: 18px;
+    border: 1px solid #d0f6e3;
+    margin-left: 28px;
+    height: 50px !important;
+}
+
+.my-radio:hover {
+    border: 1px solid #002a80;
+    cursor: pointer;
+}
+
+.my-col-xs {
+    text-align: center;
+    width: auto !important;
+}
+
+.my-content-height {
+    min-height: 480px !important;
+}
+
+.my-content-height_test {
+    min-height: 510px !important;
+}
+
+.my-btn-qiehuanti {
+    font-size: 16px;
+    width: 100% !important;
+    margin-top: 20px;
+    background-color: #2490D7 !important;
+    border: 0px solid #1687D5 !important;
+}
+
+.page-content {
+    padding: 0px !important;
+}
+
+.logo {
+    width: 95px;
+    height: 100px;
+    float: left;
+    margin-top: 25px;
+    margin-left: 40px;
+
+}
+
+.my-label-info {
+    display: none; /* FIXME */
+    background-color: #1687D5 !important;
+}
+
+.my-label-info::before {
+    border-bottom-color: #1687D5 !important;
+    border-left-color: transparent !important;
+    border-right-color: #1687D5 !important;
+    border-top-color: #1687D5 !important;
+}
+
+.my-label-info::before {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: transparent #1687D5 transparent transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 1px;
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+}
+
+.my-badge-info {
+    display: none !important;
+/ / FIXME border : 1 px solid #1687d5 !important;
+    background-color: white !important;
+    color: #1687d5 !important;
+    padding: 1px !important;
+}
+
+.my-tab-pane {
+    /*overflow: auto;*/
+}
+
+.my-menu-item {
+    width: 22px;
+    height: 22px;
+    margin-top: -5px;
+}
+
+.my-span-question-title {
+    /*border: 1px solid #000000;*/
+    /*padding: 10px 50px;*/
+    margin: 0px;
+    text-align: center;
+    font-size: 20px;
+    /*font-weight: 900;*/
+    font-family: 黑体;
+}
+
+.my-current-question {
+    background: linear-gradient(to bottom, #FCC584, #FCC584 100%) repeat-x scroll 0 0 #FCC584 !important;
+    border: 1px solid #fcc584 !important;
+    background-color: #fcc584 !important;
+}
+
+.my-current-question:focus {
+    background-color: #fcc584 !important;
+}
+
+.my-question:hover {
+    cursor: pointer;
+}
+
+.my-exit-btn:hover {
+    opacity: 0.5;
+}
+
+.my-btn-moni-biaoji {
+    border: 2px solid #FF5D56 !important;
+}
+
+.widget-toolbar {
+    display: none !important; /* FIXME */
+}
+
+.my-question-card-tab {
+    float: left !important;
+    text-align: left;
+}
+
+.smaller {
+    color: darkred;
+}
+
+.dropdown-toggle {
+    background-color: #2e6589 !important;
+    color: #ffffff !important;
+}
+
+.dropdown-toggle:active {
+    background-color: #2e6589 !important;
+}
+
+.dropdown-toggle:focus {
+    background-color: #2e6589 !important;
+}
+
+.dropdown-toggle:after {
+    background-color: #2e6589 !important;
+}
+
+.widget-body {
+    min-height: 510px ;
+}
+
+.btn-info {
+    background-color: #1687D5 !important;
+    border: 0px !important;
+    border-radius: 8px;
+    -moz-border-radius: 8px; /* Firefox */
+    -webkit-border-radius: 8px; /* Safari 和 Chrome */
+}
+
+#my-xuexi-tab-content button {
+    padding: 5px 10px !important;
+}
+
+.my-btn-xuexi-top {
+    text-align: center;
+    margin-top: 20px;
+    /*display: inline-flex;*/
+}
+
+.my-title-shuoming {
+    font-size: 16px;
+    color: black;
+    font-family: "Open Sans";
+    font-weight: bold;
+}
+
+.my-p-question {
+    font-size: 18px;
+    line-height: 35px;
+    border-top: 1px solid #88C3D7;
+    padding-top: 10px;
+}
+
+.my-question-shuoming {
+    color: #1687D5;
+    clear: none;
+    padding: 15px 10px;
+    font-size: 13px;
+}
+
+.my-question-shuoming span {
+    line-height: 22px;
+}
+
+.widget-header {
+    border-color: #1687D5 #1687D5 #1687D5;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1687D5', endColorstr='#1687D5', GradientType=0);
+    background-image: -webkit-linear-gradient(top, #1687D5 0%, #1687D5 100%);
+    background-image: -moz-linear-gradient(top, #1687D5 0%, #1687D5 100%);
+    background-image: -ms-linear-gradient(top, #1687D5 0%, #1687D5 100%);
+    background-image: -o-linear-gradient(top, #1687D5 0%, #1687D5 100%);
+    background-image: linear-gradient(top, #1687D5 0%, #1687D5 100%);
+}
+
+.my-gritter-touming {
+    background-color: #ffffff !important;
+    width: 700px !important;
+    left: 30% !important;
+    right: 30% !important;
+    top: 10% !important;
+}
+
+@media only screen and (max-width: 767px) {
+    .my-gritter-touming {
+        left: 16% !important;
+        right: 16% !important;
+        top: 10% !important;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .my-gritter-touming {
+        left: 30px !important;
+        right: 30px !important;
+    }
+}
+
+@media only screen and (max-width: 320px) {
+    .my-gritter-touming {
+        left: 10px !important;
+        right: 10px !important;
+    }
+}
+
+.smaller {
+    font-size: 16px;
+    color: #ffffff;
+    font-family: "Open Sans";
+    font-weight: bold;
+}
+
+.my-test-pre {
+    background-color: #f5fcfe;
+    border: 6px solid #328ED9;
+    border-radius: 20px;
+    font-size: 18px;
+    width: 50%;
+    clear: both;
+    margin: 10px auto 0;
+}
+
+.my-p-ind {
+    text-indent: 50px;
+}
+
+.my-content-bgcolor {
+    background-color: #F5FDF8;
+}
+
+input.ace[type="checkbox"] + .lbl, input.ace[type="radio"] + .lbl {
+    line-height: inherit !important;
+}
+
+.btn {
+    text-shadow: none !important;
+}
+
+.ace-nav > li > a {
+    background-color: #2e6589;
+}
+
+.my-btn-xuexi-fenye-pre {
+    max-height: 28px;
+}
+
+.my-btn-xuexi-fenye-next {
+    max-height: 28px;
+}
+
+.my-dropdown-menu {
+    margin: 0px !important;
+    padding: 0px !important;
+    min-width: 140px !important;
+}
+
+.my-dropdown-menu > li {
+    width: 100% !important;
+}
+
+.my-dropdown-menu > li > a {
+    font-size: 15px;
+    line-height: 2.3;
+    font-weight: 600;
+}
+
+.my-dropdown-menu > li > a:hover {
+    background-color: #1687D5 !important;
+}
+
+.my-ace-nav > li > a:hover {
+    background-color: #2173AB !important;;
+}
+
+.my-ace-nav > li > button:hover {
+    background-color: #2173AB !important;;
+}
+
+.my-dropdown-toggle {
+    background-color: #387196 !important;
+}
+
+.my-btn-question-biaoji-miaoshu:hover {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    background-image: -webkit-gradient(linear, left 0, left 100%, from(#ffffff), to(#ffffff)) !important;
+    background: linear-gradient(to bottom, #ffffff, #ffffff 100%) repeat-x scroll 0 0 #ffffff !important;
+    background-color: #ffffff !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0) !important;
+}
+
+/*蓝色按钮*/
+.my-button {
+    width: 180px;
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font: 20px 'Microsoft yahei', Arial, Helvetica, sans-serif;
+    padding: .3em .5em;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+    -webkit-border-radius: .5em;
+    -moz-border-radius: .5em;
+    border-radius: .5em;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+    -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+
+.my-button:hover {
+    text-decoration: none;
+}
+
+.my-button:active {
+    position: relative;
+    top: 1px;
+}
+
+/* blue */
+.blue {
+    color: #d9eef7;
+    border: solid 1px #0076a3;
+    background: #0095cd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#00adee), to(#0078a5));
+    background: -moz-linear-gradient(top, #00adee, #0078a5);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00adee', endColorstr='#0078a5');
+}
+
+.blue:hover {
+    background: #007ead;
+    background: -webkit-gradient(linear, left top, left bottom, from(#0095cc), to(#00678e));
+    background: -moz-linear-gradient(top, #0095cc, #00678e);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0095cc', endColorstr='#00678e');
+}
+
+.blue:active {
+    color: #80bed6;
+    background: -webkit-gradient(linear, left top, left bottom, from(#0078a5), to(#00adee));
+    background: -moz-linear-gradient(top, #0078a5, #00adee);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0078a5', endColorstr='#00adee');
+}
+
+/*
+    学习题库三角
+*/
+.open .btn.dropdown-toggle {
+    background-color: #2173AB !important;
+}
+
+.my-title-index {
+    cursor: default;
+    font-size: 39px;
+    color: #ffffff;
+    text-decoration: none;
+    display: -moz-stack;
+    padding-top: 10px;
+    font-family: 微软雅黑;
+    font-weight: 200;
+    line-height: 120px;
+    letter-spacing: 0.2em;
+}
+
+.my-display-none{
+    display: none !important;
+}

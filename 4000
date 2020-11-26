@@ -1,0 +1,4326 @@
+public class LpQuestionCtrl {
+    public LpQuestionCtrl() {
+    }
+    public void getCardQuestionList() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getAnserCardList(userId);
+        W.writeJsonArray(anserCardList);
+    }
+    public void getCardQuestionListForTest() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getAnserCardListForTest(userId);
+        W.writeJsonArray(anserCardList);
+    }
+    public void getQuestionDetail() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        if(questionId.intValue() < 1) {
+            throw new IllegalArgumentException("questionId is null");
+        } else {
+            QuestionVO question = S.lpQuestionService().getQuestion(questionId.intValue(), HttpSessionUtil.getUserId());
+            W.writeJsonObject(question);
+        }
+    }
+    public void saveQuestionError() throws InterruptedException {
+        UserAnswerVO userAnswerVO = (UserAnswerVO)W.packBean(UserAnswerVO.class);
+        int userId = HttpSessionUtil.getUserId();
+        userAnswerVO.setUserId(userId);
+        S.lpQuestionService().saveQuestionError(userAnswerVO);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void deleteQuestionError() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        int userId = HttpSessionUtil.getUserId();
+        HisCollection collection = new HisCollection();
+        collection.setQuestionId(questionId);
+        collection.setUserId(Integer.valueOf(userId));
+        collection.setType(Integer.valueOf(2));
+        S.lpQuestionService().unCollectQuestion(collection);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void saveQuestionCollect() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        Boolean isWillSave = W.getBoolean(new String[]{"deleted"});
+        if(questionId.intValue() < 1) {
+            throw new IllegalArgumentException("questionId is null");
+        } else {
+            HisCollection collection = new HisCollection();
+            collection.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            collection.setQuestionId(questionId);
+            collection.setType(Integer.valueOf(1));
+            S.lpQuestionService().saveOrDeleteCollect(collection, isWillSave.booleanValue());
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+    public void getCollectQuestions() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getCollectQuestions(userId);
+        W.writeJsonArray(anserCardList);
+    }
+    public void getErrorQuestions() {
+        int userId = HttpSessionUtil.getUserId();
+        List errorQuestions = S.lpQuestionService().getErrorQuestions(userId);
+        W.writeJsonArray(errorQuestions);
+    }
+    public void getAllQuestionForLimit() {
+        Integer currentNum = W.getInteger(new String[]{"currentNum"});
+        Integer pageSize = W.getInteger(new String[]{"pageSize"});
+        List list = S.lpQuestionService().getAllQuestionsForLimit(currentNum, pageSize);
+        W.writeJsonArray(list);
+    }
+    public void clearCollectionAppForSection() {
+        Integer type = W.getInteger(new String[]{"type"});
+        String idCard = W.getString(new String[]{"idCard"});
+        String sectionId = W.getString(new String[]{"sectionId"});
+        if(!StringUtils.isBlank(idCard) && type.intValue() >= 1) {
+            SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+            if(null == sysUser) {
+                throw new IllegalArgumentException("SysUser is null");
+            } else {
+                S.lpQuestionService().clearCollectionByUserId(sysUser.getId(), type, sectionId);
+                W.writeJson(Boolean.valueOf(true), "");
+            }
+        } else {
+            throw new IllegalArgumentException("type or idCard is wrong");
+        }
+    }
+    public void clearCollection() {
+        Integer type = W.getInteger(new String[]{"type"});
+        if(type.intValue() < 1) {
+            throw new IllegalArgumentException("type is wrong");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            S.lpQuestionService().clearCollectionByUserId(Integer.valueOf(userId), type);
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+    public void listQuestions() {
+        String type = W.getString(new String[]{"type"});
+        if(StringUtils.isBlank(type)) {
+            throw new IllegalArgumentException("type is null");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            List list = S.lpQuestionService().getQuestionByType(userId, type);
+            W.writeJsonArray(list);
+        }
+    }
+    public void listQuestionsOptimize() {
+        String type = W.getString(new String[]{"type"});
+        int userId = HttpSessionUtil.getUserId();
+        Object[][] cardNumbers = S.lpQuestionService().getQuestionByTypeOptimize(userId, type);
+        HashMap map = new HashMap();
+        map.put("type", type);
+        map.put("userId", Integer.valueOf(userId));
+        map.put("categoryCode", LpQuestionTypeEnum.get(type));
+        map.put("cardNumbers", cardNumbers);
+        W.writeJsonObject(map);
+    }
+    public void getQuestionsForPrint() {
+        Integer type = W.getInteger(new String[]{"type"});
+        if(type.intValue() < 1) {
+            throw new IllegalArgumentException("type is wrong");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            List questionsByType = S.lpQuestionService().getQuestionsByTypeForPrint(userId, type.intValue());
+            W.writeJsonArray(questionsByType);
+        }
+    }
+    public void saveErrors() {
+        String data = W.getString(new String[]{"data"});
+        if(StringUtils.isBlank(data)) {
+            throw new IllegalArgumentException("data is null");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            S.lpQuestionService().saveErrors(data, userId);
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+    public void ajaxUpdateStyTimes() throws InterruptedException {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            System.out.println("styTimes");
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            if(questionId.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+            HisAnswer hisAnswer = new HisAnswer();
+            hisAnswer.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            hisAnswer.setQuestionId(questionId);
+            try {
+                S.lpQuestionService().saveStyTimes(hisAnswer);
+            } catch (Exception var5) {
+                S.lpQuestionService().saveStyTimes(hisAnswer);
+            }
+        }
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void ajaxUpdateEffectStyTimes() throws InterruptedException {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            System.out.println("effectTimes");
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            if(questionId.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+            try {
+                S.hisAnswerService().addEffectAnswerTimes(Integer.valueOf(HttpSessionUtil.getUserId()), questionId);
+            } catch (Exception var4) {
+                S.hisAnswerService().addEffectAnswerTimes(Integer.valueOf(HttpSessionUtil.getUserId()), questionId);
+            }
+        }
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void ajaxUpdateBMCLTTimes() {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            Integer type = W.getInteger(new String[]{"type"});
+            if(questionId.intValue() < 1 || type.intValue() > 2 || type.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+            HisAnswer hisAnswer = new HisAnswer();
+            hisAnswer.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            hisAnswer.setQuestionId(questionId);
+            S.lpQuestionService().saveBMCLTTimes(hisAnswer, type);
+        }
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void ajaxAddEffectAnswerTimes() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        S.hisAnswerService().addEffectAnswerTimesForTest(questionId, HttpSessionUtil.getUserId());
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void ajaxAddAnswerTimes() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        S.hisAnswerService().addAnswerTimes(Integer.valueOf(HttpSessionUtil.getUserId()), questionId);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+}
+public class UserCtrl {
+    private static Logger log = Logger.getLogger(UserCtrl.class);
+    public UserCtrl() {
+    }
+    public void lcpf() {
+        String account = W.getStringTrim(new String[]{"username", "账号必填"});
+        int userId = S.sysUserService().loginForPufa(account);
+        if(userId == 0) {
+            W.getReq().setAttribute("message", "帐号不存在，请先注册");
+            W.getReq().setAttribute("loginMessage", "true");
+            W.forward("CommonCtrl.goTo.do?path=index_user.jsp");
+        } else {
+            HttpSessionUtil.setUsedHours(S.reportServcie().getUsedTime(Integer.valueOf(userId)));
+            HttpSessionUtil.setUserId(Integer.valueOf(userId));
+            HttpSessionUtil.setUserName(account);
+            W.redirect("CommonCtrl.goTo.do?path=/WEB-INF/pages/study/pre/warn.jsp");
+        }
+    }
+    public void lcpfForExam() {
+        String account = W.getString(new String[]{"idCard", "账号必填"});
+        int userId = S.sysUserService().loginForPufa(account);
+        W.getSession().setAttribute("userId", Integer.valueOf(userId));
+        W.getSession().setAttribute("username", account);
+        W.redirect("CommonCtrl.goTo.do?path=/WEB-INF/pages/exam/exam_pre.jsp");
+    }
+    public void enrollExam() {
+        String disk = File.separator + "var" + File.separator + "local" + File.separator + "lcsf_lts";
+        String folder = File.separator + "upload" + File.separator + "photo";
+        try {
+            W.upload(folder, SysUser.class, new UploadUserCall(disk, folder));
+        } catch (Exception var5) {
+            String message = var5.getCause().getMessage();
+            log.error(message, var5);
+            W.getReq().setAttribute("message", message);
+            W.forward("CommonCtrl.goWithCompanyJsp.do?path=/WEB-INF/pages/enrollment/sign.jsp");
+        }
+        W.getReq().setAttribute("message", "报名成功");
+        W.forward("CommonCtrl.goWithCompanyJsp.do?path=/WEB-INF/pages/enrollment/sign.jsp");
+    }
+    public void toModifySign() throws IOException {
+        String idCard = W.getString(new String[]{"idCard"});
+        if(StringUtils.isBlank(idCard)) {
+            throw new IllegalArgumentException("hzc exception: argument id card is null");
+        } else {
+            SysUser user = S.sysUserService().getUserByIdCard(idCard);
+            String path = user.getPhotoPath();
+            String imageString = PhotoUtil.getImageString(path);
+            user.setPhotoPath(imageString);
+            W.getReq().setAttribute("user", user);
+            W.forward("CommonCtrl.goTo.do?path=/WEB-INF/pages/enrollment/modify.jsp");
+        }
+    }
+    public void ajaxCheckIdCardDup() {
+        String idCard = W.getString(new String[]{"idCard"});
+        Integer count = S.sysUserService().selectUserCountByIdCard(idCard);
+        boolean isOk = count.intValue() < 1;
+        W.writeJson(Boolean.valueOf(isOk), "身份证号已经注册");
+    }
+    public void enroll() {
+        String username = W.getString(new String[]{"username"});
+        String idCard = W.getString(new String[]{"idCard"});
+        String company = W.getString(new String[]{"companyId"});
+        if(!StringUtils.isBlank(username) && !StringUtils.isBlank(idCard) && !StringUtils.isBlank(company)) {
+            SysUser sysUser = new SysUser();
+            sysUser.setCompanyId(Integer.valueOf(Integer.parseInt(company)));
+            sysUser.setIdCard(idCard);
+            sysUser.setUserName(username);
+            sysUser.setCreateTime(new Date());
+            boolean b = S.sysUserService().signUser(sysUser);
+            String result = "true";
+            String mess = "";
+            if(!b) {
+                result = "false";
+                mess = "注册失败，请重新注册";
+            } else {
+                mess = "注册成功，请登录";
+            }
+            W.getReq().setAttribute("loginMessage", result);
+            W.getReq().setAttribute("message", mess);
+            W.forward("index_user.jsp");
+        } else {
+            throw new IllegalArgumentException("hzc exception: argument is wrong.");
+        }
+    }
+    public void logoutForLp() {
+        W.getSession().removeAttribute("userId");
+        W.redirect("index_user.jsp");
+    }
+}
+public class LpQuestionCtrl {
+    public LpQuestionCtrl() {
+    }
+    public void getCardQuestionList() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getAnserCardList(userId);
+        W.writeJsonArray(anserCardList);
+    }
+    public void getCardQuestionListForTest() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getAnserCardListForTest(userId);
+        W.writeJsonArray(anserCardList);
+    }
+    public void getQuestionDetail() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        if(questionId.intValue() < 1) {
+            throw new IllegalArgumentException("questionId is null");
+        } else {
+            QuestionVO question = S.lpQuestionService().getQuestion(questionId.intValue(), HttpSessionUtil.getUserId());
+            W.writeJsonObject(question);
+        }
+    }
+    public void saveQuestionError() throws InterruptedException {
+        UserAnswerVO userAnswerVO = (UserAnswerVO)W.packBean(UserAnswerVO.class);
+        int userId = HttpSessionUtil.getUserId();
+        userAnswerVO.setUserId(userId);
+        S.lpQuestionService().saveQuestionError(userAnswerVO);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void deleteQuestionError() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        int userId = HttpSessionUtil.getUserId();
+        HisCollection collection = new HisCollection();
+        collection.setQuestionId(questionId);
+        collection.setUserId(Integer.valueOf(userId));
+        collection.setType(Integer.valueOf(2));
+        S.lpQuestionService().unCollectQuestion(collection);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void saveQuestionCollect() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        Boolean isWillSave = W.getBoolean(new String[]{"deleted"});
+        if(questionId.intValue() < 1) {
+            throw new IllegalArgumentException("questionId is null");
+        } else {
+            HisCollection collection = new HisCollection();
+            collection.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            collection.setQuestionId(questionId);
+            collection.setType(Integer.valueOf(1));
+            S.lpQuestionService().saveOrDeleteCollect(collection, isWillSave.booleanValue());
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+    public void getCollectQuestions() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getCollectQuestions(userId);
+        W.writeJsonArray(anserCardList);
+    }
+    public void getErrorQuestions() {
+        int userId = HttpSessionUtil.getUserId();
+        List errorQuestions = S.lpQuestionService().getErrorQuestions(userId);
+        W.writeJsonArray(errorQuestions);
+    }
+    public void getAllQuestionForLimit() {
+        Integer currentNum = W.getInteger(new String[]{"currentNum"});
+        Integer pageSize = W.getInteger(new String[]{"pageSize"});
+        List list = S.lpQuestionService().getAllQuestionsForLimit(currentNum, pageSize);
+        W.writeJsonArray(list);
+    }
+    public void clearCollectionAppForSection() {
+        Integer type = W.getInteger(new String[]{"type"});
+        String idCard = W.getString(new String[]{"idCard"});
+        String sectionId = W.getString(new String[]{"sectionId"});
+        if(!StringUtils.isBlank(idCard) && type.intValue() >= 1) {
+            SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+            if(null == sysUser) {
+                throw new IllegalArgumentException("SysUser is null");
+            } else {
+                S.lpQuestionService().clearCollectionByUserId(sysUser.getId(), type, sectionId);
+                W.writeJson(Boolean.valueOf(true), "");
+            }
+        } else {
+            throw new IllegalArgumentException("type or idCard is wrong");
+        }
+    }
+    public void clearCollection() {
+        Integer type = W.getInteger(new String[]{"type"});
+        if(type.intValue() < 1) {
+            throw new IllegalArgumentException("type is wrong");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            S.lpQuestionService().clearCollectionByUserId(Integer.valueOf(userId), type);
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+    public void listQuestions() {
+        String type = W.getString(new String[]{"type"});
+        if(StringUtils.isBlank(type)) {
+            throw new IllegalArgumentException("type is null");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            List list = S.lpQuestionService().getQuestionByType(userId, type);
+            W.writeJsonArray(list);
+        }
+    }
+    public void listQuestionsOptimize() {
+        String type = W.getString(new String[]{"type"});
+        int userId = HttpSessionUtil.getUserId();
+        Object[][] cardNumbers = S.lpQuestionService().getQuestionByTypeOptimize(userId, type);
+        HashMap map = new HashMap();
+        map.put("type", type);
+        map.put("userId", Integer.valueOf(userId));
+        map.put("categoryCode", LpQuestionTypeEnum.get(type));
+        map.put("cardNumbers", cardNumbers);
+        W.writeJsonObject(map);
+    }
+    public void getQuestionsForPrint() {
+        Integer type = W.getInteger(new String[]{"type"});
+        if(type.intValue() < 1) {
+            throw new IllegalArgumentException("type is wrong");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            List questionsByType = S.lpQuestionService().getQuestionsByTypeForPrint(userId, type.intValue());
+            W.writeJsonArray(questionsByType);
+        }
+    }
+    public void saveErrors() {
+        String data = W.getString(new String[]{"data"});
+        if(StringUtils.isBlank(data)) {
+            throw new IllegalArgumentException("data is null");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            S.lpQuestionService().saveErrors(data, userId);
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+    public void ajaxUpdateStyTimes() throws InterruptedException {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            System.out.println("styTimes");
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            if(questionId.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+            HisAnswer hisAnswer = new HisAnswer();
+            hisAnswer.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            hisAnswer.setQuestionId(questionId);
+            try {
+                S.lpQuestionService().saveStyTimes(hisAnswer);
+            } catch (Exception var5) {
+                S.lpQuestionService().saveStyTimes(hisAnswer);
+            }
+        }
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void ajaxUpdateEffectStyTimes() throws InterruptedException {
+    }
+    public void ajaxUpdateBMCLTTimes() {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            Integer type = W.getInteger(new String[]{"type"});
+            if(questionId.intValue() < 1 || type.intValue() > 2 || type.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+            HisAnswer hisAnswer = new HisAnswer();
+            hisAnswer.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            hisAnswer.setQuestionId(questionId);
+            S.lpQuestionService().saveBMCLTTimes(hisAnswer, type);
+        }
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void ajaxAddEffectAnswerTimes() {
+    }
+    public void ajaxAddAnswerTimes() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        S.hisAnswerService().addAnswerTimes(Integer.valueOf(HttpSessionUtil.getUserId()), questionId);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+    public void ajaxGetQuestionsList() {
+        String seq = W.getString(new String[]{"seq"});
+        String type = W.getString(new String[]{"type"});
+        String name = W.getString(new String[]{"name"});
+        LpQuestion question = new LpQuestion();
+        if(seq != "" && seq != null) {
+            question.setSeq(Integer.valueOf(Integer.parseInt(seq)));
+        }
+        if(type != "" && type != null) {
+            question.setType(type);
+        }
+        if(name != "" && name != null) {
+            question.setName(name);
+        }
+        List list = S.lpQuestionService().ajaxGetQuestionsList(question);
+        W.writeJsonArray(list);
+    }
+    public void ajaxDeleteRresouce() {
+        Integer id = W.getInteger(new String[]{"id"});
+        ResultVO vo = S.lpQuestionService().deleteResource(id);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+    public void listQuestionJunior() {
+        HttpServletRequest req = W.getReq();
+        req.setAttribute("questionGroupId", W.getInteger(new String[]{"questionGroupId"}));
+        W.forward("/WEB-INF/pages/management/ManageSystem/questions_junior.jsp");
+    }
+    public void ajaxAddResource() {
+        LpQuestion group = (LpQuestion)W.packBean(LpQuestion.class);
+        int seq = S.lpQuestionService().selectMaxseq(group.getType()) + 1;
+        group.setSeq(Integer.valueOf(seq));
+        ResultVO vo = S.lpQuestionService().addLpQuestion(group);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+    public void ajaxGetResource() {
+        Integer id = W.getInteger(new String[]{"id"});
+        LpQuestion resource = S.lpQuestionService().getResource(id);
+        W.writeJsonObject(resource);
+    }
+    public void ajaxUpdateResource() {
+        LpQuestion resource = (LpQuestion)W.packBean(LpQuestion.class);
+        ResultVO vo = S.lpQuestionService().updateResource(resource);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+    public void ajaxGetJuniorQuestionList() {
+        Integer questionGroupId = W.getInteger(new String[]{"questionGroupId"});
+        List list = S.lpQuestionService().getJuniorQuestionList(questionGroupId);
+        W.writeJsonArray(list);
+    }
+    public void ajaxAddOption() {
+        LpOption option = (LpOption)W.packBean(LpOption.class);
+        ResultVO vo = S.lpQuestionService().AddOption(option);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+    public void ajaxDeleteOption() {
+        Integer id = W.getInteger(new String[]{"id"});
+        ResultVO vo = S.lpQuestionService().deleteOptio(id);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+    public void ajaxGetOption() {
+        Integer id = W.getInteger(new String[]{"id"});
+        LpOption resource = S.lpQuestionService().getOption(id);
+        W.writeJsonObject(resource);
+    }
+    public void ajaxUpdateOption() {
+        LpOption resource = (LpOption)W.packBean(LpOption.class);
+        ResultVO vo = S.lpQuestionService().updateOption(resource);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+}
+public class ManagementCtrl {
+    public ManagementCtrl() {
+    }
+
+    public void login() {
+        String userName = W.getStringTrim(new String[]{"userName"});
+        String password = W.getStringTrim(new String[]{"password"});
+        if(!StringUtils.isBlank(userName) && !StringUtils.isBlank(password)) {
+            ResultVO vo = S.managementService().login(userName, password);
+            if(vo.isCode()) {
+                HttpSessionUtil.setUserId(vo.getUser().getId());
+                W.forward("/WEB-INF/pages/management/menu.jsp");
+            } else {
+                W.getReq().setAttribute("result", vo);
+                W.forward("/WEB-INF/pages/management/login.jsp");
+            }
+
+        } else {
+            throw new IllegalArgumentException("hzc exception: arguments were wrong");
+        }
+    }
+
+    public void ajaxGetReportGroup() {
+        List list = S.managementService().getReportGroup();
+        W.writeJsonArray(list);
+    }
+
+    public void listReportCompany() {
+        String groupId = W.getStringTrim(new String[]{"groupId"});
+        String groupName = W.getStringTrim(new String[]{"groupName"});
+        if(!StringUtils.isBlank(groupId) && !StringUtils.isBlank(groupName)) {
+            HttpServletRequest req = W.getReq();
+            req.setAttribute("groupId", groupId);
+            req.setAttribute("groupName", groupName);
+            W.forward("/WEB-INF/pages/management/company_report.jsp");
+        } else {
+            throw new IllegalArgumentException("hzc exception: arguments were wrong");
+        }
+    }
+
+    public void ajaxGetCompanyReportList() {
+        Integer pid = W.getInteger(new String[]{"pid"});
+        if(pid.intValue() < 0) {
+            throw new IllegalArgumentException("hzc exception:arguments were wrong");
+        } else {
+            int pageSize = W.getInteger(new String[]{"iDisplayLength"}).intValue();
+            int echo = W.getInteger(new String[]{"sEcho"}).intValue();
+            int startIndex = W.getInteger(new String[]{"iDisplayStart"}).intValue();
+            String sort = W.getSort();
+            String order = W.getOrder();
+            PageVO pageVO = new PageVO();
+            pageVO.setPageSize(pageSize);
+            pageVO.setStartIndex(startIndex);
+            pageVO.setOrder(order);
+            pageVO.setSort(sort);
+            pageVO = S.managementService().getCompanyReportList(pageVO, pid);
+            HashMap resultMap = new HashMap();
+            resultMap.put("dataList", pageVO.getData());
+            resultMap.put("iTotalRecords", Integer.valueOf(pageVO.getTotalRecords()));
+            resultMap.put("sEcho", Integer.valueOf(echo));
+            resultMap.put("iTotalDisplayRecords", Integer.valueOf(pageVO.getTotalDisplayRecords()));
+            W.writeJsonObject(resultMap);
+        }
+    }
+
+    public void listReportPeople() {
+        HttpServletRequest req = W.getReq();
+        req.setAttribute("companyId", W.getInteger(new String[]{"companyId"}));
+        req.setAttribute("companyName", W.getStringTrim(new String[]{"companyName"}));
+        W.forward("/WEB-INF/pages/management/people_report.jsp");
+    }
+
+    public void ajaxGetPeopleReportList() {
+        Integer companyId = W.getInteger(new String[]{"companyId"});
+        int pageSize = W.getInteger(new String[]{"iDisplayLength"}).intValue();
+        int echo = W.getInteger(new String[]{"sEcho"}).intValue();
+        int startIndex = W.getInteger(new String[]{"iDisplayStart"}).intValue();
+        String sort = W.getSort();
+        String order = W.getOrder();
+        PageVO pageVO = new PageVO();
+        pageVO.setPageSize(pageSize);
+        pageVO.setStartIndex(startIndex);
+        pageVO.setOrder(order);
+        pageVO.setSort(sort);
+        pageVO = S.managementService().getPeopleReportList(pageVO, companyId);
+        HashMap resultMap = new HashMap();
+        resultMap.put("dataList", pageVO.getData());
+        resultMap.put("iTotalRecords", Integer.valueOf(pageVO.getTotalRecords()));
+        resultMap.put("sEcho", Integer.valueOf(echo));
+        resultMap.put("iTotalDisplayRecords", Integer.valueOf(pageVO.getTotalDisplayRecords()));
+        W.writeJsonObject(resultMap);
+    }
+
+    public void ajaxGetResourceList() {
+        List list = S.managementService().getResourceList();
+        W.writeJsonArray(list);
+    }
+
+    public void ajaxGetResource() {
+        Integer id = W.getInteger(new String[]{"id"});
+        SysResource resource = S.managementService().getResource(id);
+        W.writeJsonObject(resource);
+    }
+
+    public void ajaxUpdateResource() {
+        SysResource resource = (SysResource)W.packBean(SysResource.class);
+        ResultVO vo = S.managementService().updateResource(resource);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxDeleteResource() {
+        Integer id = W.getInteger(new String[]{"id"});
+        ResultVO vo = S.managementService().deleteResource(id);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxAddResource() {
+        SysResource resource = (SysResource)W.packBean(SysResource.class);
+        ResultVO vo = S.managementService().addResource(resource);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxGetConfigList() {
+        List list = S.sysConfigService().getConfigList();
+        W.writeJsonArray(list);
+    }
+
+    public void ajaxGetConfig() {
+        Integer id = W.getInteger(new String[]{"id"});
+        SysConfig config = S.sysConfigService().getConfig(id);
+        W.writeJsonObject(config);
+    }
+
+    public void ajaxUpdateConfig() {
+        SysConfig config = (SysConfig)W.packBean(SysConfig.class);
+        ResultVO vo = S.sysConfigService().updateConfig(config);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxDeleteRresouce() {
+        Integer id = W.getInteger(new String[]{"id"});
+        ResultVO vo = S.managementService().deleteResource(id);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+}
+
+public class SysCompanyCtrl {
+    public SysCompanyCtrl() {
+    }
+
+    public void listCompanyJunior() {
+        HttpServletRequest req = W.getReq();
+        req.setAttribute("companyGroupId", W.getInteger(new String[]{"companyGroupId"}));
+        req.setAttribute("companyGroupName", W.getStringTrim(new String[]{"companyGroupName"}));
+        W.forward("/WEB-INF/pages/management/ManageSystem/company_junior.jsp");
+    }
+
+    public void ajaxGetJuniorCompanyList() {
+        Integer companyGroupId = W.getInteger(new String[]{"companyGroupId"});
+        String sort = W.getSort();
+        String order = W.getOrder();
+        PageVO pageVO = new PageVO();
+        pageVO.setOrder(order);
+        pageVO.setSort(sort);
+        List list = S.sysCompanyService().getJuniorCompanyList(pageVO, companyGroupId);
+        W.writeJsonArray(list);
+    }
+
+    public void ajaxDeleteCompany() {
+        Integer id = W.getInteger(new String[]{"id"});
+        ResultVO vo = S.sysCompanyService().deleteCompany(id);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxAddCompany() {
+        SysCompany company = (SysCompany)W.packBean(SysCompany.class);
+        Integer pid = W.getInteger(new String[]{"pid"});
+        ResultVO vo = S.sysCompanyService().addCompany(company, pid);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxListStandardCompanies() {
+        List list = S.sysCompanyService().listStandardCompanies();
+        W.writeJsonArray(list);
+    }
+
+    public void ajaxListOtherCompanies() {
+        List list = S.sysCompanyService().listOtherCompanies();
+        W.writeJsonArray(list);
+    }
+
+    public void ajaxAddSelfCompany() {
+        String companyName = W.getString(new String[]{"company"});
+        if(StringUtils.isBlank(companyName)) {
+            W.writeJson(Boolean.valueOf(false), "单位不能为空");
+        }
+
+        SysCompany company = new SysCompany();
+        company.setDeleted(Integer.valueOf(1));
+        company.setName(companyName);
+        company.setPassword("123456");
+        company.setPid(Integer.valueOf(8));
+        Integer companyId = S.sysCompanyService().addSelfCompany(company);
+        W.writeJson(Boolean.valueOf(true), String.valueOf(companyId));
+    }
+
+    public void ajaxAddCompanyGroups() {
+        SysCompany group = (SysCompany)W.packBean(SysCompany.class);
+        ResultVO vo = S.sysCompanyService().addCompanyGroup(group);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxGetCompanyGroupList() {
+        List list = S.sysCompanyService().ajaxGetCompanyGroupList();
+        W.writeJsonArray(list);
+    }
+
+    public void ajaxGetCompanyGroup() {
+        Integer id = W.getInteger(new String[]{"id"});
+        SysCompany company = S.sysCompanyService().getCompanyById(id);
+        W.writeJsonObject(company);
+    }
+
+    public void ajaxUpdateCompanyGroup() {
+        SysCompany group = (SysCompany)W.packBean(SysCompany.class);
+        ResultVO vo = S.sysCompanyService().updateCompanyGroup(group);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+}
+
+public class UserCtrl {
+    public UserCtrl() {
+    }
+
+    public void ajaxCheckPhoneDup() {
+        String phone = W.getString(new String[]{"phone"});
+        Integer count = S.sysUserService().selectUserCountByPhone(phone);
+        boolean isOk = count.intValue() < 1;
+        W.writeJson(Boolean.valueOf(isOk), "用户名已存在");
+    }
+
+    public void ajaxGetUserList() {
+        String phone = W.getString(new String[]{"phone"});
+        String idCard = W.getString(new String[]{"idCard"});
+        String userName = W.getString(new String[]{"userName"});
+        String companyId = W.getString(new String[]{"companyId"});
+        String jobGrade = W.getString(new String[]{"jobGrade"});
+        SysUser user = new SysUser();
+        if(phone != "" && phone != null) {
+            user.setPhone(phone);
+        }
+
+        if(idCard != "" && idCard != null) {
+            user.setIdCard(idCard);
+        }
+
+        if(userName != "" && userName != null) {
+            user.setUserName(userName);
+        }
+
+        if(StringUtils.isNotBlank(companyId)) {
+            user.setCompanyId(Integer.valueOf(Integer.parseInt(companyId)));
+        }
+
+        if(jobGrade != "" && jobGrade != null) {
+            user.setJobGrade(jobGrade);
+        }
+
+        List list = S.sysUserService().ajaxGetUserList(user);
+        W.writeJsonArray(list);
+    }
+
+    public void ajaxAddResource() {
+        SysUser group = (SysUser)W.packBean(SysUser.class);
+        group.setPasswd("000000");
+        ResultVO vo = S.sysUserService().addSysUser(group);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxDeleteRresouce() {
+        Integer id = W.getInteger(new String[]{"id"});
+        ResultVO vo = S.sysUserService().deleteResource(id);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+
+    public void ajaxGetResource() {
+        Integer id = W.getInteger(new String[]{"id"});
+        SysUser resource = S.sysUserService().getResource(id);
+        W.writeJsonObject(resource);
+    }
+
+    public void ajaxUpdateResource() {
+        SysUser resource = (SysUser)W.packBean(SysUser.class);
+        ResultVO vo = S.sysUserService().updateResource(resource);
+        W.writeJson(Boolean.valueOf(vo.isCode()), vo.getMessage());
+    }
+}
+
+public class LpExamCtrl {
+    public LpExamCtrl() {
+    }
+
+    public void getCardQuestionListForTest() {
+        Integer type = W.getInteger(new String[]{"type"});
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.examService().loadCardList(userId, type);
+        W.writeJsonArray(anserCardList);
+    }
+
+    public void getQuestionDetail() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        QuestionVO question = S.examService().loadQuestionDetail(questionId.intValue(), HttpSessionUtil.getUserId());
+        W.writeJsonObject(question);
+    }
+
+    public void saveErrors() {
+        String hisPaperStr = W.getString(new String[]{"hisPaperStr"});
+        String hisPaperItemsStr = W.getString(new String[]{"hisPaperItemsStr"});
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+
+    public void ajaxCheckExamTime() {
+        W.writeJson(Boolean.valueOf(this.checkExamTime()), "");
+    }
+
+    public void gotoExam() throws Exception {
+        if(this.checkExamTime()) {
+            W.forward("/WEB-INF/pages/exam/exam.jsp");
+        } else {
+            throw new Exception("非法操作");
+        }
+    }
+
+    private boolean checkExamTime() {
+        List resources = S.sysResourceService().getResources();
+        Date date = new Date();
+        boolean start = false;
+        Iterator var4 = resources.iterator();
+
+        while(var4.hasNext()) {
+            SysResource r = (SysResource)var4.next();
+            if(date.getTime() > r.getStartTime().getTime() && date.getTime() < r.getEndTime().getTime()) {
+                start = true;
+            }
+        }
+
+        return start;
+    }
+
+    public void ajaxSaveUserAnswer() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        String userAnswer = W.getStringTrim(new String[]{"userAnswer"});
+        if(StringUtils.isBlank(userAnswer)) {
+            throw new IllegalArgumentException("hzc exception:userAnswer is " + userAnswer);
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            boolean b = S.examService().saveUserAnswer(userId, questionId, userAnswer);
+            W.writeJson(Boolean.valueOf(b), "");
+        }
+    }
+
+    public void saveExam() {
+        int userId = HttpSessionUtil.getUserId();
+        S.examService().saveExam(userId);
+        this.showExamResult(Integer.valueOf(userId));
+    }
+
+    private void showExamResult(Integer userId) {
+        HttpServletRequest req = W.getReq();
+        HisPaper paper = S.examService().getPaperByUserId(userId.intValue());
+        req.setAttribute("paper", paper);
+        SysUser user = S.sysUserService().getUserById(userId);
+        req.setAttribute("user", user);
+        Date startTime = paper.getAnswerStartTime();
+        Date endTime = paper.getAnswerEndTime();
+        long answerTime = TimeUtil.getMinuteInterval(startTime, endTime);
+        req.setAttribute("answerTime", Long.valueOf(answerTime));
+        String o = TimeUtil.getYearStr(endTime) + "年" + TimeUtil.getMonthStr(endTime) + "月" + TimeUtil.getDayStr(endTime) + "日&nbsp;&nbsp;&nbsp;" + TimeUtil.getHourStr(endTime) + "时" + TimeUtil.getMinuteStr(endTime) + "分";
+        req.setAttribute("answerEndTime", o);
+        List paperItems = S.examService().getCorrectQuestions(paper.getId());
+        req.setAttribute("correctQuestions", Integer.valueOf(paperItems.size()));
+        W.forward("/WEB-INF/pages/exam/result.jsp");
+    }
+
+    public void ajaxGetExamTime() {
+        List resources = S.sysResourceService().getResources();
+        Date date = new Date();
+        long interval = -2147483648L;
+        HashMap map = new HashMap();
+        Iterator var6 = resources.iterator();
+
+        while(true) {
+            while(var6.hasNext()) {
+                SysResource r = (SysResource)var6.next();
+                if(date.getTime() > r.getStartTime().getTime() && date.getTime() < r.getEndTime().getTime()) {
+                    map.put("result", "true");
+                } else if(date.getTime() < r.getStartTime().getTime()) {
+                    long secondInterval = TimeUtil.getSecondInterval(date, r.getStartTime());
+                    if(interval > secondInterval || interval < 0L) {
+                        interval = secondInterval;
+                        map.put("result", "false");
+                        map.put("second", Long.valueOf(secondInterval));
+                    }
+                } else {
+                    map.put("result", "考试已经结束");
+                }
+            }
+
+            W.writeJsonObject(map);
+            return;
+        }
+    }
+}
+
+public class LpQuestionCtrl {
+    public LpQuestionCtrl() {
+    }
+
+    public void getCardQuestionList() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getAnserCardList(userId);
+        W.writeJsonArray(anserCardList);
+    }
+
+    public void getCardQuestionListForTest() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getAnserCardListForTest(userId);
+        W.writeJsonArray(anserCardList);
+    }
+
+    public void getQuestionDetail() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        if(questionId.intValue() < 1) {
+            throw new IllegalArgumentException("questionId is null");
+        } else {
+            QuestionVO question = S.lpQuestionService().getQuestion(questionId.intValue(), HttpSessionUtil.getUserId());
+            W.writeJsonObject(question);
+        }
+    }
+
+    public void saveQuestionError() throws InterruptedException {
+        UserAnswerVO userAnswerVO = (UserAnswerVO)W.packBean(UserAnswerVO.class);
+        int userId = HttpSessionUtil.getUserId();
+        userAnswerVO.setUserId(userId);
+        S.lpQuestionService().saveQuestionError(userAnswerVO);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+
+    public void deleteQuestionError() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        int userId = HttpSessionUtil.getUserId();
+        HisCollection collection = new HisCollection();
+        collection.setQuestionId(questionId);
+        collection.setUserId(Integer.valueOf(userId));
+        collection.setType(Integer.valueOf(2));
+        S.lpQuestionService().unCollectQuestion(collection);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+
+    public void saveQuestionCollect() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        Boolean isWillSave = W.getBoolean(new String[]{"deleted"});
+        if(questionId.intValue() < 1) {
+            throw new IllegalArgumentException("questionId is null");
+        } else {
+            HisCollection collection = new HisCollection();
+            collection.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            collection.setQuestionId(questionId);
+            collection.setType(Integer.valueOf(1));
+            S.lpQuestionService().saveOrDeleteCollect(collection, isWillSave.booleanValue());
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+
+    public void getCollectQuestions() {
+        int userId = HttpSessionUtil.getUserId();
+        List anserCardList = S.lpQuestionService().getCollectQuestions(userId);
+        W.writeJsonArray(anserCardList);
+    }
+
+    public void getErrorQuestions() {
+        int userId = HttpSessionUtil.getUserId();
+        List errorQuestions = S.lpQuestionService().getErrorQuestions(userId);
+        W.writeJsonArray(errorQuestions);
+    }
+
+    public void getAllQuestionForLimit() {
+        Integer currentNum = W.getInteger(new String[]{"currentNum"});
+        Integer pageSize = W.getInteger(new String[]{"pageSize"});
+        List list = S.lpQuestionService().getAllQuestionsForLimit(currentNum, pageSize);
+        W.writeJsonArray(list);
+    }
+
+    public void clearCollectionAppForSection() {
+        Integer type = W.getInteger(new String[]{"type"});
+        String idCard = W.getString(new String[]{"idCard"});
+        String sectionId = W.getString(new String[]{"sectionId"});
+        if(!StringUtils.isBlank(idCard) && type.intValue() >= 1) {
+            SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+            if(null == sysUser) {
+                throw new IllegalArgumentException("SysUser is null");
+            } else {
+                S.lpQuestionService().clearCollectionByUserId(sysUser.getId(), type, sectionId);
+                W.writeJson(Boolean.valueOf(true), "");
+            }
+        } else {
+            throw new IllegalArgumentException("type or idCard is wrong");
+        }
+    }
+
+    public void clearCollection() {
+        Integer type = W.getInteger(new String[]{"type"});
+        if(type.intValue() < 1) {
+            throw new IllegalArgumentException("type is wrong");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            S.lpQuestionService().clearCollectionByUserId(Integer.valueOf(userId), type);
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+
+    public void listQuestions() {
+        String type = W.getString(new String[]{"type"});
+        if(StringUtils.isBlank(type)) {
+            throw new IllegalArgumentException("type is null");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            List list = S.lpQuestionService().getQuestionByType(userId, type);
+            W.writeJsonArray(list);
+        }
+    }
+
+    public void listQuestionsOptimize() {
+        String type = W.getString(new String[]{"type"});
+        int userId = HttpSessionUtil.getUserId();
+        Object[][] cardNumbers = S.lpQuestionService().getQuestionByTypeOptimize(userId, type);
+        HashMap map = new HashMap();
+        map.put("type", type);
+        map.put("userId", Integer.valueOf(userId));
+        map.put("categoryCode", LpQuestionTypeEnum.get(type));
+        map.put("cardNumbers", cardNumbers);
+        W.writeJsonObject(map);
+    }
+
+    public void getQuestionsForPrint() {
+        Integer type = W.getInteger(new String[]{"type"});
+        if(type.intValue() < 1) {
+            throw new IllegalArgumentException("type is wrong");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            List questionsByType = S.lpQuestionService().getQuestionsByTypeForPrint(userId, type.intValue());
+            W.writeJsonArray(questionsByType);
+        }
+    }
+
+    public void saveErrors() {
+        String data = W.getString(new String[]{"data"});
+        if(StringUtils.isBlank(data)) {
+            throw new IllegalArgumentException("data is null");
+        } else {
+            int userId = HttpSessionUtil.getUserId();
+            S.lpQuestionService().saveErrors(data, userId);
+            W.writeJson(Boolean.valueOf(true), "");
+        }
+    }
+
+    public void ajaxUpdateStyTimes() throws InterruptedException {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            System.out.println("styTimes");
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            if(questionId.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+
+            HisAnswer hisAnswer = new HisAnswer();
+            hisAnswer.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            hisAnswer.setQuestionId(questionId);
+
+            try {
+                S.lpQuestionService().saveStyTimes(hisAnswer);
+            } catch (Exception var5) {
+                S.lpQuestionService().saveStyTimes(hisAnswer);
+            }
+        }
+
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+
+    public void ajaxUpdateEffectStyTimes() throws InterruptedException {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            System.out.println("effectTimes");
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            if(questionId.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+
+            try {
+                S.hisAnswerService().addEffectAnswerTimes(Integer.valueOf(HttpSessionUtil.getUserId()), questionId);
+            } catch (Exception var4) {
+                S.hisAnswerService().addEffectAnswerTimes(Integer.valueOf(HttpSessionUtil.getUserId()), questionId);
+            }
+        }
+
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+
+    public void ajaxUpdateBMCLTTimes() {
+        boolean b = HttpSessionUtil.checkLessFiveMinutes();
+        if(!b) {
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            Integer type = W.getInteger(new String[]{"type"});
+            if(questionId.intValue() < 1 || type.intValue() > 2 || type.intValue() < 1) {
+                throw new IllegalArgumentException("hzc Exception: argument is wrong");
+            }
+
+            HisAnswer hisAnswer = new HisAnswer();
+            hisAnswer.setUserId(Integer.valueOf(HttpSessionUtil.getUserId()));
+            hisAnswer.setQuestionId(questionId);
+            S.lpQuestionService().saveBMCLTTimes(hisAnswer, type);
+        }
+
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+
+    public void ajaxAddEffectAnswerTimes() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        S.hisAnswerService().addEffectAnswerTimesForTest(questionId, HttpSessionUtil.getUserId());
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+
+    public void ajaxAddAnswerTimes() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        S.hisAnswerService().addAnswerTimes(Integer.valueOf(HttpSessionUtil.getUserId()), questionId);
+        W.writeJson(Boolean.valueOf(true), "");
+    }
+}
+
+public class UserCtrl {
+    private static Logger log = Logger.getLogger(UserCtrl.class);
+
+    public UserCtrl() {
+    }
+
+    public void lcpf() {
+        String account = W.getStringTrim(new String[]{"username", "账号必填"});
+        int userId = S.sysUserService().loginForPufa(account);
+        if(userId == 0) {
+            W.getReq().setAttribute("message", "帐号不存在，请先注册");
+            W.getReq().setAttribute("loginMessage", "true");
+            W.forward("CommonCtrl.goTo.do?path=index_user.jsp");
+        } else {
+            HttpSessionUtil.setUsedHours(S.reportServcie().getUsedTime(Integer.valueOf(userId)));
+            HttpSessionUtil.setUserId(Integer.valueOf(userId));
+            HttpSessionUtil.setUserName(account);
+            W.redirect("CommonCtrl.goTo.do?path=/WEB-INF/pages/study/pre/warn.jsp");
+        }
+
+    }
+
+    public void lcpfForExam() {
+        String account = W.getString(new String[]{"idCard", "账号必填"});
+        int userId = S.sysUserService().loginForPufa(account);
+        if(userId == 0) {
+            W.getReq().setAttribute("result", "您未报名，不能参加考试");
+            W.forward("CommonCtrl.goTo.do?path=/WEB-INF/pages/exam/login.jsp");
+        } else {
+            W.getSession().setAttribute("userId", Integer.valueOf(userId));
+            W.getSession().setAttribute("username", account);
+            W.redirect("CommonCtrl.goTo.do?path=/WEB-INF/pages/exam/exam_pre.jsp");
+        }
+
+    }
+
+    public void enrollExam() {
+        String disk = File.separator + "var" + File.separator + "local" + File.separator + "lcsf_lts";
+        String folder = File.separator + "upload" + File.separator + "photo";
+
+        try {
+            W.upload(folder, SysUser.class, new UploadUserCall(disk, folder));
+        } catch (Exception var5) {
+            String message = var5.getCause().getMessage();
+            log.error(message, var5);
+            W.getReq().setAttribute("message", message);
+            W.forward("CommonCtrl.goWithCompanyJsp.do?path=/WEB-INF/pages/enrollment/sign.jsp");
+        }
+
+        W.getReq().setAttribute("message", "报名成功");
+        W.forward("CommonCtrl.goWithCompanyJsp.do?path=/WEB-INF/pages/enrollment/sign.jsp");
+    }
+
+    /** @deprecated */
+    public void toModifySign() throws IOException {
+        String idCard = W.getString(new String[]{"idCard"});
+        if(StringUtils.isBlank(idCard)) {
+            throw new IllegalArgumentException("hzc exception: argument id card is null");
+        } else {
+            SysUser user = S.sysUserService().getUserByIdCard(idCard);
+            String path = user.getPhotoPath();
+            String imageString = PhotoUtil.getImageString(path);
+            user.setPhotoPath(imageString);
+            W.getReq().setAttribute("user", user);
+            W.forward("CommonCtrl.goTo.do?path=/WEB-INF/pages/enrollment/modify.jsp");
+        }
+    }
+
+    public void ajaxCheckIdCardDup() {
+        String idCard = W.getString(new String[]{"idCard"});
+        Integer count = S.sysUserService().selectUserCountByIdCard(idCard);
+        boolean isOk = count.intValue() < 1;
+        W.writeJson(Boolean.valueOf(isOk), "身份证号已经注册");
+    }
+
+    public void enroll() {
+        String username = W.getString(new String[]{"username"});
+        String idCard = W.getString(new String[]{"idCard"});
+        String company = W.getString(new String[]{"companyId"});
+        if(!StringUtils.isBlank(username) && !StringUtils.isBlank(idCard) && !StringUtils.isBlank(company)) {
+            SysUser sysUser = new SysUser();
+            sysUser.setCompanyId(Integer.valueOf(Integer.parseInt(company)));
+            sysUser.setIdCard(idCard);
+            sysUser.setUserName(username);
+            sysUser.setCreateTime(new Date());
+            boolean b = S.sysUserService().signUser(sysUser);
+            String result = "true";
+            String mess = "";
+            if(!b) {
+                result = "false";
+                mess = "注册失败，请重新注册";
+            } else {
+                mess = "注册成功，请登录";
+            }
+
+            W.getReq().setAttribute("loginMessage", result);
+            W.getReq().setAttribute("message", mess);
+            W.forward("index_user.jsp");
+        } else {
+            throw new IllegalArgumentException("hzc exception: argument is wrong.");
+        }
+    }
+
+    public void logoutForLp() {
+        W.getSession().removeAttribute("userId");
+        W.redirect("index_user.jsp");
+    }
+
+    public void loginForKaijuan() {
+        String account = W.getString(new String[]{"idCard", "账号必填"});
+        SysUser user = S.sysUserService().getUserByStatus(account, Integer.valueOf(3));
+        if(null == user) {
+            W.getReq().setAttribute("result", "您未报名，不能参加考试");
+            W.forward("CommonCtrl.goTo.do?path=/WEB-INF/pages/exam/login.jsp");
+        } else {
+            W.getSession().setAttribute("user", user);
+            W.getSession().setAttribute("username", account);
+            W.redirect("CommonCtrl.goTo.do?path=/WEB-INF/pages/exam/exam_pre.jsp");
+        }
+
+    }
+}
+
+public class LpSyncCtrl {
+    public LpSyncCtrl() {
+    }
+
+    public void saveAndLoad() {
+        String idCard = W.getString(new String[]{"idCard"});
+        String updateTimeStr = W.getString(new String[]{"updateTimeStr"});
+        Date updateTime = null;
+        if(StringUtils.isNotBlank(updateTimeStr)) {
+            updateTime = new Date(Long.parseLong(updateTimeStr));
+        }
+
+        String dataStr = W.getString(new String[]{"dataStr"});
+        HisCollection[] hisCollections = (HisCollection[])((HisCollection[])W.jsonConvertJavaArray(HisCollection.class, dataStr));
+        List list = S.lpSyncService().loadRemoteData(idCard, updateTime);
+        Date date = S.lpSyncService().saveLocalData(idCard, hisCollections);
+        HashMap map = new HashMap();
+        map.put("date", Long.valueOf(date.getTime()));
+        map.put("data", list);
+        W.writeJsonObject(map);
+    }
+
+    public void saveCollection() {
+        String idCard = W.getString(new String[]{"idCard"});
+        SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+        HisCollection hisCollection = (HisCollection)W.packBean(HisCollection.class);
+        hisCollection.setUpdateTime(new Date());
+        hisCollection.setUserId(sysUser.getId());
+        boolean b = S.lpSyncService().saveCollection(hisCollection);
+        W.writeJson(Boolean.valueOf(b), "");
+    }
+
+    public void deleteCollection() {
+        String idCard = W.getString(new String[]{"idCard"});
+        SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+        HisCollection hisCollection = (HisCollection)W.packBean(HisCollection.class);
+        hisCollection.setUpdateTime(new Date());
+        hisCollection.setUserId(sysUser.getId());
+        boolean b = S.lpSyncService().deleteCollection(hisCollection);
+        W.writeJson(Boolean.valueOf(b), "");
+    }
+
+    public void loadCollection() {
+        String idCard = W.getString(new String[]{"idCard"});
+        SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+        HisCollection hisCollection = (HisCollection)W.packBean(HisCollection.class);
+        hisCollection.setUserId(sysUser.getId());
+        List list = S.lpSyncService().loadCollection(hisCollection);
+        W.writeJsonArray(list);
+    }
+
+    public void clearCollectionApp() {
+        Integer type = W.getInteger(new String[]{"type"});
+        String idCard = W.getString(new String[]{"idCard"});
+        if(!StringUtils.isBlank(idCard) && type.intValue() >= 1) {
+            SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+            if(null == sysUser) {
+                throw new IllegalArgumentException("SysUser is null");
+            } else {
+                S.lpQuestionService().clearCollectionByUserId(sysUser.getId(), type);
+                W.writeJson(Boolean.valueOf(true), "");
+            }
+        } else {
+            throw new IllegalArgumentException("type or idCard is wrong");
+        }
+    }
+
+    public void clearCollectionAppForSection() {
+        Integer type = W.getInteger(new String[]{"type"});
+        String idCard = W.getString(new String[]{"idCard"});
+        String sectionId = W.getString(new String[]{"sectionId"});
+        if(!StringUtils.isBlank(idCard) && type.intValue() >= 1) {
+            SysUser sysUser = S.sysUserService().getUserByIdCard(idCard);
+            if(null == sysUser) {
+                throw new IllegalArgumentException("SysUser is null");
+            } else {
+                S.lpQuestionService().clearCollectionByUserId(sysUser.getId(), type, sectionId);
+                W.writeJson(Boolean.valueOf(true), "");
+            }
+        } else {
+            throw new IllegalArgumentException("type or idCard is wrong");
+        }
+    }
+
+    public void addAnswerTimes() {
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        String idCard = W.getString(new String[]{"idCard"});
+        SysUser sysUser = S.sysUserService().selectUserByIdCard(idCard);
+        int userId = sysUser.getId().intValue();
+        boolean b = S.hisAnswerService().addAnswerTimes(Integer.valueOf(userId), questionId);
+        if(!HttpSessionUtil.checkLessFiveMinutes()) {
+            S.hisAnswerService().addEffectAnswerTimes2(Integer.valueOf(userId), questionId);
+        }
+
+        W.writeJson(Boolean.valueOf(b), "");
+    }
+
+    public void addStudyTimes() throws InterruptedException {
+        if(HttpSessionUtil.checkLessFiveMinutes()) {
+            W.writeJson(Boolean.valueOf(false), "");
+        } else {
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            String idCard = W.getString(new String[]{"idCard"});
+            SysUser sysUser = S.sysUserService().selectUserByIdCard(idCard);
+            int userId = sysUser.getId().intValue();
+            boolean b = S.hisAnswerService().addStudyTimes(Integer.valueOf(userId), questionId);
+            W.writeJson(Boolean.valueOf(b), "");
+        }
+    }
+
+    public void addCollectTimes() throws InterruptedException {
+        Thread.sleep(5000L);
+        Integer questionId = W.getInteger(new String[]{"questionId"});
+        String idCard = W.getString(new String[]{"idCard"});
+        SysUser sysUser = S.sysUserService().selectUserByIdCard(idCard);
+        int userId = sysUser.getId().intValue();
+        boolean b = S.hisAnswerService().addCollectTimes(Integer.valueOf(userId), questionId);
+        W.writeJson(Boolean.valueOf(b), "");
+    }
+
+    public void addTimesForBookmark() {
+        if(HttpSessionUtil.checkLessFiveMinutes()) {
+            W.writeJson(Boolean.valueOf(false), "");
+        } else {
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            String idCard = W.getString(new String[]{"idCard"});
+            SysUser sysUser = S.sysUserService().selectUserByIdCard(idCard);
+            int userId = sysUser.getId().intValue();
+            boolean b = S.hisAnswerService().addTimesForBookmark(userId, questionId);
+            W.writeJson(Boolean.valueOf(b), "");
+        }
+    }
+
+    public void addTimesForError() {
+        if(HttpSessionUtil.checkLessFiveMinutes()) {
+            W.writeJson(Boolean.valueOf(false), "");
+        } else {
+            Integer questionId = W.getInteger(new String[]{"questionId"});
+            String idCard = W.getString(new String[]{"idCard"});
+            SysUser sysUser = S.sysUserService().selectUserByIdCard(idCard);
+            int userId = sysUser.getId().intValue();
+            boolean b = S.hisAnswerService().addTimesForError(userId, questionId);
+            W.writeJson(Boolean.valueOf(b), "");
+        }
+    }
+}
+
+@Transaction(
+    jdbc = TrancationType.CLOSE
+)
+public class ExamService {
+    public ExamService() {
+    }
+
+    public List<AnswerCardVO> loadCardList(int userId, Integer type) {
+        HisPaper paper = this.getPaperByUserId(userId);
+        Object acVos = new ArrayList();
+        if(null != paper) {
+            acVos = this.getPaperItemByPaperId(paper.getId());
+        } else {
+            ArrayList test_panduan_card = new ArrayList();
+            ArrayList test_danxuan_card = new ArrayList();
+            ArrayList test_duoxuan_card = new ArrayList();
+            List acvList = D.lpQuestionMapper().selectForAnswerCardList(userId);
+            Iterator var9 = acvList.iterator();
+
+            while(var9.hasNext()) {
+                AnswerCardVO vo = (AnswerCardVO)var9.next();
+                if("判断题".equals(vo.getType())) {
+                    test_panduan_card.add(vo);
+                } else if("单选题".equals(vo.getType())) {
+                    test_danxuan_card.add(vo);
+                } else if("多选题".equals(vo.getType())) {
+                    test_duoxuan_card.add(vo);
+                }
+            }
+
+            Collections.shuffle(test_panduan_card);
+            Collections.shuffle(test_danxuan_card);
+            Collections.shuffle(test_duoxuan_card);
+            ((List)acVos).addAll(test_panduan_card.subList(0, 30));
+            ((List)acVos).addAll(test_danxuan_card.subList(0, 30));
+            ((List)acVos).addAll(test_duoxuan_card.subList(0, 20));
+            this.saveUserPaper(userId, (List)acVos, type);
+        }
+
+        return (List)acVos;
+    }
+
+    private List<AnswerCardVO> getPaperItemByPaperId(Integer id) {
+        return D.hisPaperItemMapper().selectByPaperId(id);
+    }
+
+    public HisPaper getPaperByUserId(int userId) {
+        return D.hisPaperMapper().selectByUserId(userId);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    private void saveUserPaper(int userId, List<AnswerCardVO> acVos, Integer type) {
+        HisPaper hisPaper = new HisPaper();
+        Date createTime = new Date();
+        hisPaper.setAnswerStartTime(createTime);
+        hisPaper.setType(type);
+        hisPaper.setCloseExam(Integer.valueOf(type.intValue() == 1?2:1));
+        hisPaper.setCreateTime(createTime);
+        hisPaper.setDeleted(Integer.valueOf(1));
+        hisPaper.setUserId(Integer.valueOf(userId));
+        Integer paperId = this.addHisPaper(hisPaper);
+        this.addHisPaperItem(paperId, acVos, createTime);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    private void addHisPaperItem(Integer paperId, List<AnswerCardVO> list, Date createTime) {
+        D.hisPaperItemMapper().insertAllQuestionForOnePaper(paperId, list, createTime);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    private Integer addHisPaper(HisPaper hisPaper) {
+        D.hisPaperMapper().insertSelective(hisPaper);
+        return hisPaper.getId();
+    }
+
+    public QuestionVO loadQuestionDetail(int questionId, int userId) {
+        QuestionVO questionVO = this.getQuestionByUserIdAndQuestionId(userId, questionId);
+        List lpOptions = this.getOptions(questionId);
+        String[] labels = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"};
+        int i = 0;
+
+        for(Iterator options = lpOptions.iterator(); options.hasNext(); ++i) {
+            LpOption lpOption = (LpOption)options.next();
+            lpOption.setLabel(labels[i]);
+        }
+
+        questionVO.setOptions(lpOptions);
+        return questionVO;
+    }
+
+    private List<LpOption> getOptions(int questionId) {
+        return D.lpOptionMapper().selectByQuestionId(questionId);
+    }
+
+    private QuestionVO getQuestionByUserIdAndQuestionId(int userId, int questionId) {
+        return D.hisPaperItemMapper().selectQuestionByUserIdAndQuestionId(userId, questionId);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void saveUserAnswer(String hisPaperStr, String hisPaperItemStr, int userId, Integer cardId) {
+        HisPaper hisPaper = (HisPaper)WebUtil.jsonConvertJavaObject(HisPaper.class, hisPaperStr);
+        hisPaper.setDeleted(Integer.valueOf(1));
+        hisPaper.setUserId(Integer.valueOf(userId));
+        hisPaper.setCardId(cardId);
+        hisPaper.setUpdateTime(new Date());
+        hisPaper.setCreateTime(new Date());
+        hisPaper.setCloseExam(Integer.valueOf(2));
+        D.hisPaperMapper().insert(hisPaper);
+        Integer paperId = hisPaper.getId();
+        HisPaperItem[] hisPaperItems = (HisPaperItem[])((HisPaperItem[])WebUtil.jsonConvertJavaArray(HisPaperItem.class, hisPaperItemStr));
+        HisPaperItem[] var8 = hisPaperItems;
+        int var9 = hisPaperItems.length;
+
+        for(int var10 = 0; var10 < var9; ++var10) {
+            HisPaperItem hisPaperItem = var8[var10];
+            Integer questionId = hisPaperItem.getSeq();
+            System.out.println(questionId);
+            QuestionVO questionVO = this.loadQuestionDetail(questionId.intValue(), userId);
+            hisPaperItem.setName(questionVO.getName());
+            hisPaperItem.setCategoryCode("" + questionVO.getCategoryCode());
+            hisPaperItem.setType(questionVO.getType());
+            List options = questionVO.getOptions();
+            LpOption lpOption;
+            if(options.size() > 0) {
+                lpOption = (LpOption)options.get(0);
+                hisPaperItem.setOptionA(lpOption.getName());
+                if(lpOption.getKey().intValue() == 1) {
+                    hisPaperItem.setKey("A");
+                }
+            }
+
+            if(options.size() > 1) {
+                lpOption = (LpOption)options.get(1);
+                hisPaperItem.setOptionB(lpOption.getName());
+                if(lpOption.getKey().intValue() == 1) {
+                    hisPaperItem.setKey("B");
+                }
+            }
+
+            if(options.size() > 2) {
+                lpOption = (LpOption)options.get(2);
+                hisPaperItem.setOptionC(lpOption.getName());
+                if(lpOption.getKey().intValue() == 1) {
+                    hisPaperItem.setKey("C");
+                }
+            }
+
+            if(options.size() > 3) {
+                lpOption = (LpOption)options.get(3);
+                hisPaperItem.setOptionD(lpOption.getName());
+                if(lpOption.getKey().intValue() == 1) {
+                    hisPaperItem.setKey("D");
+                }
+            }
+
+            hisPaperItem.setUpdateTime(new Date());
+            hisPaperItem.setCreateTime(new Date());
+            hisPaperItem.setDeleted(Integer.valueOf(1));
+            hisPaperItem.setPaperId(paperId);
+            D.hisPaperItemMapper().insert(hisPaperItem);
+        }
+
+    }
+
+    public boolean saveUserAnswer(int userId, Integer questionId, String userAnswer) {
+        QuestionVO vo = this.loadQuestionDetail(questionId.intValue(), userId);
+        HisPaper paper = this.getPaperByUserId(userId);
+        Integer paperId = paper.getId();
+        HisPaperItem item = this.getPaperItemByQuestionIdAndPaperId(questionId, paperId);
+        Date date = new Date();
+        item.setName(vo.getName());
+        List options = vo.getOptions();
+        String questionKey = "";
+
+        for(int i = 0; i < options.size(); ++i) {
+            LpOption option = (LpOption)options.get(i);
+            String name = option.getName();
+            Integer key = option.getKey();
+            if(key.intValue() > 0) {
+                questionKey = questionKey + option.getLabel();
+            }
+
+            switch(i) {
+            case 0:
+                item.setOptionA(name);
+                break;
+            case 1:
+                item.setOptionB(name);
+                break;
+            case 2:
+                item.setOptionC(name);
+                break;
+            case 3:
+                item.setOptionD(name);
+                break;
+            case 4:
+                item.setOptionE(name);
+                break;
+            case 5:
+                item.setOptionF(name);
+            }
+        }
+
+        item.setKey(questionKey);
+        item.setAnswer(userAnswer);
+        item.setUpdateTime(date);
+        item.setPaperId(paperId);
+        return this.updatePaperItemById(item);
+    }
+
+    public HisPaperItem getPaperItemByQuestionIdAndPaperId(Integer questionId, Integer paperId) {
+        return D.hisPaperItemMapper().selectByQuestionIdAndPaperId(questionId, paperId);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public boolean updatePaperItemById(HisPaperItem item) {
+        return D.hisPaperItemMapper().updateByPrimaryKeySelective(item) == 1;
+    }
+
+    public boolean saveExam(int userId) {
+        HisPaper paper = this.getPaperByUserId(userId);
+        Integer score = this.calculateScore(paper.getId());
+        paper.setScore(Float.valueOf(score.floatValue()));
+        paper.setAnswerEndTime(new Date());
+        return this.updatePaperById(paper);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    private boolean updatePaperById(HisPaper paper) {
+        return D.hisPaperMapper().updateByPrimaryKeySelective(paper) == 1;
+    }
+
+    private Integer calculateScore(Integer paperId) {
+        return D.hisPaperItemMapper().calculateScore(paperId);
+    }
+
+    public List<HisPaperItem> getCorrectQuestions(Integer paperId) {
+        return D.hisPaperItemMapper().selectCorrectQuestions(paperId);
+    }
+}
+
+@Transaction(
+    jdbc = TrancationType.CLOSE
+)
+public class LpQuestionService {
+    private static Logger log = Logger.getLogger(LpQuestionService.class);
+
+    public LpQuestionService() {
+    }
+
+    public List<AnswerCardVO> getAnserCardList(int userId) {
+        return D.lpQuestionMapper().selectForAnswerCardList(userId);
+    }
+
+    public List<AnswerCardVO> getAnserCardListForTest(int userId) {
+        ArrayList test_panduan_card = new ArrayList();
+        ArrayList test_danxuan_card = new ArrayList();
+        ArrayList test_duoxuan_card = new ArrayList();
+        List acvList = D.lpQuestionMapper().selectForAnswerCardList(userId);
+        Iterator acVos = acvList.iterator();
+
+        while(acVos.hasNext()) {
+            AnswerCardVO vo = (AnswerCardVO)acVos.next();
+            if("判断题".equals(vo.getType())) {
+                test_panduan_card.add(vo);
+            } else if("单选题".equals(vo.getType())) {
+                test_danxuan_card.add(vo);
+            } else if("多选题".equals(vo.getType())) {
+                test_duoxuan_card.add(vo);
+            }
+        }
+
+        Collections.shuffle(test_panduan_card);
+        Collections.shuffle(test_danxuan_card);
+        Collections.shuffle(test_duoxuan_card);
+        ArrayList acVos1 = new ArrayList();
+        acVos1.addAll(test_panduan_card.subList(0, 30));
+        acVos1.addAll(test_danxuan_card.subList(0, 30));
+        acVos1.addAll(test_duoxuan_card.subList(0, 20));
+        return acVos1;
+    }
+
+    public QuestionVO getQuestion(int questionId, int userId) {
+        QuestionVO questionVO = D.lpQuestionMapper().selectByPrimaryKeyForUser(questionId, userId);
+        List options = this.getOptionByQuestionId(questionId);
+        questionVO.setOptions(options);
+        return questionVO;
+    }
+
+    public List<LpOption> getOptionByQuestionId(int questionId) {
+        List lpOptions = D.lpOptionMapper().selectByQuestionId(questionId);
+        String[] labels = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"};
+        int i = 0;
+
+        for(Iterator var5 = lpOptions.iterator(); var5.hasNext(); ++i) {
+            LpOption lpOption = (LpOption)var5.next();
+            lpOption.setLabel(labels[i]);
+        }
+
+        return lpOptions;
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void updateUserAnserInfo(HisAnswer answer) {
+        D.hisAnswerMapper().updateAnswerInfoByUserIdAndQuestionId(answer);
+    }
+
+    public HisAnswer selectLpAnswerByUserIdAndQuestionId(int userId, int questionId) {
+        return D.hisAnswerMapper().selectByUserIdAndQuestionId(userId, questionId);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void saveCollection(HisCollection collection) {
+        try {
+            D.hisCollectionMapper().insertSelective(collection);
+        } catch (Exception var3) {
+            ;
+        }
+
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void unCollectQuestion(HisCollection collection) {
+        D.hisCollectionMapper().deleteByUserIdAndQuestionId(collection);
+    }
+
+    public void saveQuestionError(UserAnswerVO userAnswerVO) {
+        String userResult = userAnswerVO.getUserResult();
+        Integer questionId = userAnswerVO.getQuestionId();
+        int userId = userAnswerVO.getUserId();
+        String userAnswer = userAnswerVO.getUserAnswer();
+        HisAnswer hisAnswer = this.selectLpAnswerByUserIdAndQuestionId(userId, questionId.intValue());
+        if(null == hisAnswer) {
+            hisAnswer = new HisAnswer();
+        }
+
+        hisAnswer.setCollectTimes(Integer.valueOf(0));
+        hisAnswer.setQuestionId(questionId);
+        hisAnswer.setUserId(Integer.valueOf(userId));
+        HisCollection collection = this.getCollectQuestion(questionId, userId, 2);
+        if(userResult.equals("true")) {
+            if(null != collection) {
+                this.deleteCollectById(collection.getId());
+            }
+        } else {
+            hisAnswer.setCollectTimes(Integer.valueOf(1));
+            LpQuestion e = D.lpQuestionMapper().selectByPrimaryKey(questionId);
+            if(null == collection) {
+                collection = new HisCollection();
+                collection.setUserId(Integer.valueOf(userId));
+                collection.setType(Integer.valueOf(2));
+                collection.setCategoryCode(e.getCategoryCode());
+                collection.setQuestionId(questionId);
+                collection.setAnswer(userAnswer);
+                collection.setUpdateTime(new Date());
+                this.saveCollection(collection);
+            }
+        }
+
+        try {
+            this.saveAndUpdateUserAnswer(hisAnswer);
+        } catch (Exception var9) {
+            this.saveAndUpdateUserAnswer(hisAnswer);
+        }
+
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void subtractStyTimes(Integer userId, Integer questionId) {
+        D.hisAnswerMapper().subtractStyTimes(userId, questionId);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void deleteCollectById(Integer id) {
+        D.hisCollectionMapper().deleteByPrimaryKey(id);
+    }
+
+    public HisCollection getCollectQuestion(Integer questionId, int userId, int type) {
+        return D.hisCollectionMapper().selectByQIdUIdAndType(questionId, userId, type);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void saveUserAnswer(HisAnswer answer) {
+        D.hisAnswerMapper().insertSelective(answer);
+    }
+
+    public void saveAndUpdateUserAnswer(HisAnswer answer) {
+        Integer userId = answer.getUserId();
+        Integer questionId = answer.getQuestionId();
+        HisAnswer hisAnswer = this.selectLpAnswerByUserIdAndQuestionId(userId.intValue(), questionId.intValue());
+        if(null != hisAnswer) {
+            this.updateUserAnserInfo(answer);
+        } else {
+            answer.setCollectTimes(Integer.valueOf(1));
+            answer.setAnswerTimes(Integer.valueOf(1));
+            answer.setCreateTime(new Date());
+            answer.setDeleted(Integer.valueOf(1));
+            this.saveUserAnswer(answer);
+        }
+
+    }
+
+    public void saveOrDeleteCollect(HisCollection collection, boolean deleted) {
+        LpQuestion lpQuestion = D.lpQuestionMapper().selectByPrimaryKey(collection.getQuestionId());
+        collection.setCategoryCode(lpQuestion.getCategoryCode());
+        if(deleted) {
+            this.saveCollection(collection);
+        } else {
+            this.unCollectQuestion(collection);
+        }
+
+    }
+
+    public List<AnswerCardVO> getCollectQuestions(int userId) {
+        return this.getCollections(userId, 1);
+    }
+
+    public List<AnswerCardVO> getErrorQuestions(int userId) {
+        return this.getErrorCollections(userId);
+    }
+
+    public List<AnswerCardVO> getCollections(int userId, int type) {
+        return D.hisCollectionMapper().selectCollectionsByUserIdForCard(userId, type);
+    }
+
+    public List<AnswerCardVO> getErrorCollections(int userId) {
+        return D.hisCollectionMapper().selectErrorCollections(userId);
+    }
+
+    public List<QuestionVO> getAllQuestionsForLimit(Integer currentNum, Integer pageSize) {
+        List list = D.lpQuestionMapper().selectAllQuestionForLimit(currentNum, pageSize);
+        ArrayList vos = new ArrayList();
+
+        for(int i = 0; i < list.size(); ++i) {
+            QuestionVO questionVO = (QuestionVO)list.get(i);
+            List options = this.getOptionByQuestionId(questionVO.getQuestionId());
+            questionVO.setOptions(options);
+            vos.add(questionVO);
+        }
+
+        return vos;
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void clearCollectionByUserId(Integer userId, Integer type, String sectionId) {
+        D.hisCollectionMapper().deleteByUserIdAndType(userId, type, sectionId);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void clearCollectionByUserId(Integer userId, Integer type) {
+        D.hisCollectionMapper().deleteByUserIdAndType(userId, type, (String)null);
+    }
+
+    public List<AnswerCardVO> getQuestionByType(int userId, String type) {
+        return D.lpQuestionMapper().selectByType(userId, type);
+    }
+
+    public Object[][] getQuestionByTypeOptimize(int userId, String type) {
+        List list = D.lpQuestionMapper().selectByTypeOptimize(userId, type);
+        Object[][] ret = new Object[list.size()][];
+
+        for(int i = 0; i < list.size(); ++i) {
+            Map map = (Map)list.get(i);
+            Object questionId = map.get("questionId");
+            Object collectTime = map.get("collectTimes");
+            Object answerTime = map.get("answerTimes");
+            Object seq = map.get("seq");
+            ret[i] = new Object[]{questionId, collectTime, answerTime, seq};
+        }
+
+        return ret;
+    }
+
+    public List<QuestionVO> getQuestionsByTypeForPrint(int userId, int type) {
+        List list = this.getCollectionsForPrint(userId, type);
+        ArrayList vos = new ArrayList();
+
+        for(int i = 0; i < list.size(); ++i) {
+            AnswerCardVO vo = (AnswerCardVO)list.get(i);
+            QuestionVO questionVO = new QuestionVO();
+            questionVO.setQuestionId(vo.getQuestionId());
+            questionVO.setName(vo.getName());
+            questionVO.setType(vo.getType());
+            questionVO.setSeq(vo.getSeq());
+            questionVO.setCollectTime(vo.getCollectTime());
+            questionVO.setAnswerTime(vo.getAnswerTime());
+            questionVO.setCategoryCode(vo.getCategoryCode());
+            List options = this.getOptionByQuestionId(vo.getQuestionId());
+            questionVO.setOptions(options);
+            vos.add(questionVO);
+        }
+
+        return vos;
+    }
+
+    private List<AnswerCardVO> getCollectionsForPrint(int userId, int type) {
+        return D.hisCollectionMapper().selectCollectionsByUserIdForPrint(userId, type);
+    }
+
+    public void saveErrors(String data, int userId) {
+        JSONArray jsonArray = JSONArray.fromObject(data);
+        Object[] array = jsonArray.toArray();
+        UserAnswerVO userAnswerVO = new UserAnswerVO();
+
+        for(int i = 0; i < array.length; ++i) {
+            Object o = array[i];
+            JSONObject jsonObject = JSONObject.fromObject(o);
+            String qid = jsonObject.getString("name");
+            JSONObject val = jsonObject.getJSONObject("val");
+            if(val.size() > 0 && StringUtils.isNotBlank(val.getString("ua"))) {
+                String ua = val.getString("ua");
+                String ur = val.getString("ur");
+                userAnswerVO.setUserId(userId);
+                userAnswerVO.setQuestionId(Integer.valueOf(Integer.parseInt(qid)));
+                userAnswerVO.setUserAnswer(ua);
+                userAnswerVO.setUserResult(ur);
+                this.saveQuestionError(userAnswerVO);
+            }
+        }
+
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void saveStyTimes(HisAnswer answer) {
+        Integer userId = answer.getUserId();
+        Integer questionId = answer.getQuestionId();
+        HisAnswer hisAnswer = this.selectLpAnswerByUserIdAndQuestionId(userId.intValue(), questionId.intValue());
+        if(null != hisAnswer) {
+            D.hisAnswerMapper().addStudyTimes(userId, questionId);
+        } else {
+            answer.setStyTimes(Integer.valueOf(1));
+            answer.setCreateTime(new Date());
+            answer.setDeleted(Integer.valueOf(1));
+            this.saveUserAnswer(answer);
+        }
+
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void saveBMCLTTimes(HisAnswer answer, Integer type) {
+        Integer userId = answer.getUserId();
+        Integer questionId = answer.getQuestionId();
+        HisAnswer hisAnswer = this.selectLpAnswerByUserIdAndQuestionId(userId.intValue(), questionId.intValue());
+        if(type.intValue() == 1) {
+            answer.setStyBmTimes(Integer.valueOf(1));
+            answer.setStyCltTimes(Integer.valueOf(0));
+        } else {
+            answer.setStyCltTimes(Integer.valueOf(1));
+            answer.setStyBmTimes(Integer.valueOf(0));
+        }
+
+        if(null != hisAnswer) {
+            answer.setId(hisAnswer.getId());
+            D.hisAnswerMapper().updateBMCLTTimes(answer);
+        } else {
+            answer.setCreateTime(new Date());
+            answer.setDeleted(Integer.valueOf(1));
+            this.saveUserAnswer(answer);
+        }
+
+    }
+
+    @DataTablePager
+    public List<LpQuestion> ajaxGetQuestionsList(LpQuestion question) {
+        return D.lpQuestionMapper().selectGroupQuestions(question);
+    }
+
+    public ResultVO deleteResource(Integer id) {
+        Integer integer = this.deleteResourceById(id);
+        return integer.intValue() == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    private Integer deleteResourceById(Integer id) {
+        return Integer.valueOf(D.lpQuestionMapper().deleteByPrimaryKey(id));
+    }
+
+    public ResultVO addLpQuestion(LpQuestion question) {
+        int count = this.saveQuestion(question);
+        return count == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public int saveQuestion(LpQuestion question) {
+        return D.lpQuestionMapper().insertSelective(question);
+    }
+
+    public int selectMaxseq(String type) {
+        return D.lpQuestionMapper().selectMaxseq(type);
+    }
+
+    public LpQuestion getResource(Integer id) {
+        return D.lpQuestionMapper().selectByPrimaryKey(id);
+    }
+
+    public ResultVO updateResource(LpQuestion resource) {
+        Integer integer = this.updateResourceById(resource);
+        return integer.intValue() == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    public Integer updateResourceById(LpQuestion resource) {
+        return Integer.valueOf(D.lpQuestionMapper().updateByPrimaryKeySelective(resource));
+    }
+
+    @DataTablePager
+    public List<LpOption> getJuniorQuestionList(Integer qid) {
+        return D.lpOptionMapper().selectJuniorOptionList(qid);
+    }
+
+    public ResultVO AddOption(LpOption option) {
+        Integer integer = this.insertOptionGroup(option);
+        return integer.intValue() == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    private Integer insertOptionGroup(LpOption group) {
+        return Integer.valueOf(D.lpOptionMapper().insertSelective(group));
+    }
+
+    public ResultVO deleteOptio(Integer id) {
+        Integer integer = this.deleteOptionById(id);
+        return integer.intValue() == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    private Integer deleteOptionById(Integer id) {
+        return Integer.valueOf(D.lpOptionMapper().deleteByPrimaryKey(id));
+    }
+
+    public LpOption getOption(Integer id) {
+        return D.lpOptionMapper().selectByPrimaryKey(id);
+    }
+
+    public ResultVO updateOption(LpOption resource) {
+        Integer integer = this.updateOptionById(resource);
+        return integer.intValue() == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    public Integer updateOptionById(LpOption resource) {
+        return Integer.valueOf(D.lpOptionMapper().updateByPrimaryKeySelective(resource));
+    }
+}
+
+@Transaction
+public class SysUserService {
+    public SysUserService() {
+    }
+
+    public ResultVO login(String phone, String password) {
+        SysUser user = this.getUserByPhone(phone);
+        ResultVO resultVO;
+        if(null != user) {
+            password = MySecurity.encode_sda("2FdHR59fDds_dRdRs", password);
+            if(user.getPasswd().equals(password)) {
+                if(user.getStatus().intValue() == 1 && user.getDeleted().intValue() == 1) {
+                    Random random = new Random();
+                    int i = 1;
+
+                    String key;
+                    for(key = ""; i < 4; ++i) {
+                        key = random.nextInt(10) + "," + key;
+                    }
+
+                    user.setDeskey(key);
+                    user.setOnline(Integer.valueOf(1));
+                    this.updateSysUser(user);
+                    resultVO = new ResultVO(true, key);
+                } else {
+                    resultVO = new ResultVO(false, "此用户已被锁定");
+                }
+            } else {
+                resultVO = new ResultVO(false, "用户名密码错误");
+            }
+        } else {
+            resultVO = new ResultVO(false, "用户名不存在");
+        }
+
+        return resultVO;
+    }
+
+    public ResultVO checkUserByPhone(String phone) {
+        SysUser user = this.getUserByPhone(phone);
+        ResultVO resultVO;
+        if(null != user) {
+            resultVO = new ResultVO(true, "此账号已存在");
+        } else {
+            resultVO = new ResultVO(false, "此帐号未被注册");
+        }
+
+        return resultVO;
+    }
+
+    public SysUser getUserByPhone(String phone) {
+        return D.sysUserMapper().selectByPhone(phone);
+    }
+
+    public ResultVO register(String phone, String password, String verifycode, String app, int system) {
+        SysUser user = this.getUserByPhone(phone);
+        ResultVO resultVO;
+        if(null == user) {
+            password = MySecurity.encode_sda("2FdHR59fDds_dRdRs", password);
+            SysUser sysUser = new SysUser();
+            sysUser.setPhone(phone);
+            sysUser.setPasswd(password);
+            this.saveSysUser(sysUser);
+            resultVO = new ResultVO(true, "注册成功");
+        } else {
+            resultVO = new ResultVO(false, "用户已存在");
+        }
+
+        return resultVO;
+    }
+
+    public ResultVO updatePassword(String phone, String password, String code) {
+        SysUser user = this.getUserByPhone(phone);
+        ResultVO resultVo;
+        if(null != user) {
+            if(user.getDeleted().intValue() == 1 && user.getStatus().intValue() == 1) {
+                password = MySecurity.encode_sda("2FdHR59fDds_dRdRs", password);
+                user.setPasswd(password);
+                this.updateSysUser(user);
+                resultVo = new ResultVO(true, "更新密码成功");
+            } else {
+                resultVo = new ResultVO(false, "用户已被锁定");
+            }
+        } else {
+            resultVo = new ResultVO(false, "用户不存在");
+        }
+
+        return resultVo;
+    }
+
+    public boolean updateSysUser(SysUser user) {
+        return D.sysUserMapper().updateByPrimaryKeySelective(user) == 1;
+    }
+
+    public ResultVO logout(String phone) {
+        SysUser user = this.getUserByPhone(phone);
+        user.setOnline(Integer.valueOf(0));
+        this.updateSysUser(user);
+        return new ResultVO(true, "退出成功");
+    }
+
+    @DataTablePager
+    public List<SysUser> searchEmpowerList(SysUser user) {
+        return D.sysUserMapper().selectList(user, SystemEnum.HELP_STUDY.getValue());
+    }
+
+    @DataTablePager
+    public List<SysUser> searchPufaLexueList(SysUser user) {
+        return D.sysUserMapper().selectList(user, SystemEnum.PUFA_LEXU.getValue());
+    }
+
+    @DataTablePager
+    public List<SysUser> searchBaoMingList(SysUser user) {
+        return D.sysUserMapper().selectList(user, SystemEnum.BAO_MING.getValue());
+    }
+
+    public int loginForPufa(String account) {
+        SysUser user = this.getUserByIdCard(account);
+        int userId = 0;
+        if(null != user) {
+            userId = user.getId().intValue();
+        }
+
+        return userId;
+    }
+
+    public SysUser getUserByIdCard(String idCard) {
+        return D.sysUserMapper().selectByIdCard(idCard);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public int saveSysUser(SysUser sysUser) {
+        return D.sysUserMapper().insertSelective(sysUser);
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    public void updateStatusById(Integer[] userIds, Integer status) {
+        D.sysUserMapper().updateStatus(userIds, status);
+    }
+
+    public ResultVO register(String phone, String password, String verifycode) {
+        SysUser user = this.getUserByPhone(phone);
+        ResultVO resultVO;
+        if(null == user) {
+            password = MySecurity.encode_sda("2FdHR59fDds_dRdRs", password);
+            SysUser sysUser = new SysUser();
+            sysUser.setPhone(phone);
+            sysUser.setPasswd(password);
+            D.sysUserMapper().insertSelective(sysUser);
+            resultVO = new ResultVO(true, "注册成功");
+        } else {
+            resultVO = new ResultVO(false, "用户已存在");
+        }
+
+        return resultVO;
+    }
+
+    @DataTablePager
+    public List<SysUser> searchList(SysUser user) {
+        return D.sysUserMapper().selectList(user, SystemEnum.HELP_STUDY.ordinal());
+    }
+
+    @Transaction(
+        jdbc = TrancationType.CLOSE
+    )
+    public List<SysUserVO> getUsersById(Integer[] userIds) {
+        return D.sysUserMapper().selectByIds(userIds);
+    }
+
+    public void enrollUser(SysUser user) {
+        String idCard = user.getIdCard();
+        SysUser existUser = this.getUserByIdCard(idCard);
+        if(existUser != null) {
+            user.setId(existUser.getId());
+            this.updateSysUser(user);
+        } else {
+            this.saveSysUser(user);
+        }
+
+    }
+
+    public boolean signUser(SysUser user) {
+        String idCard = user.getIdCard();
+        SysUser existUser = this.getUserByIdCard(idCard);
+        if(existUser != null) {
+            return false;
+        } else {
+            this.saveSysUser(user);
+            return true;
+        }
+    }
+
+    public SysUser selectUserByIdCard(String idCard) {
+        return D.sysUserMapper().selectByIdCard(idCard);
+    }
+
+    public Integer selectUserCountByIdCard(String idCard) {
+        return D.sysUserMapper().selectCountByIdCard(idCard);
+    }
+
+    @DataTablePager
+    @Transaction(
+        jdbc = TrancationType.CLOSE
+    )
+    public List<SysUserVO> getUserManageList(SysUserVO sysUserVO) {
+        return D.sysUserMapper().getUserManageList(sysUserVO);
+    }
+
+    public SysUser getUserById(Integer id) {
+        return D.sysUserMapper().selectByPrimaryKey(id);
+    }
+
+    public SysUser getUserByStatus(String idCard, Integer status) {
+        return D.sysUserMapper().selectByStatus(idCard, status);
+    }
+
+    public ResultVO addSysUser(SysUser sysUser) {
+        int count = this.saveSysUser(sysUser);
+        return count == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    public ResultVO deleteResource(Integer id) {
+        Integer integer = this.deleteResourceById(id);
+        return integer.intValue() == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    public SysUser getResource(Integer id) {
+        return D.sysUserMapper().selectByPrimaryKey(id);
+    }
+
+    public ResultVO updateResource(SysUser resource) {
+        Integer integer = this.updateResourceById(resource);
+        return integer.intValue() == 1?new ResultVO(Boolean.TRUE.booleanValue(), "成功"):new ResultVO(Boolean.FALSE.booleanValue(), "失败");
+    }
+
+    public Integer updateResourceById(SysUser resource) {
+        return Integer.valueOf(D.sysUserMapper().updateByPrimaryKeySelective(resource));
+    }
+
+    public Integer selectUserCountByPhone(String phone) {
+        return D.sysUserMapper().selectCountByPhone(phone);
+    }
+
+    @DataTablePager
+    public List<SysUser> ajaxGetUserList(SysUser user) {
+        return D.sysUserMapper().selectGroupUser(user);
+    }
+
+    private Integer deleteResourceById(Integer id) {
+        return Integer.valueOf(D.sysUserMapper().deleteByPrimaryKey(id));
+    }
+}
+
+@Transaction(
+    jdbc = TrancationType.CLOSE
+)
+public class HisPaperItemService {
+    public HisPaperItemService() {
+    }
+
+    public HisPaper getUserPaper(Integer userId) {
+        HisPaper paper = D.hisPaperMapper().selectByUserId(userId.intValue());
+        return paper;
+    }
+
+    public List<HisPaperItemVO> getUserPaperInformation(Integer currentNum, Integer pageSize, Integer paperId) {
+        List list = D.hisPaperItemMapper().selectAllQuestionForLimit(currentNum, pageSize, paperId);
+        ArrayList vos = new ArrayList();
+
+        for(int i = 0; i < list.size(); ++i) {
+            HisPaperItemVO hisPaperItemVO = (HisPaperItemVO)list.get(i);
+            List options = this.getOptionByQuestionId(hisPaperItemVO.getId().intValue());
+            hisPaperItemVO.setOptions(options);
+            vos.add(hisPaperItemVO);
+        }
+
+        return vos;
+    }
+
+    public List<LpOption> getOptionByQuestionId(int questionId) {
+        List lpOptions = D.lpOptionMapper().selectByQuestionId(questionId);
+        String[] labels = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"};
+        int i = 0;
+
+        for(Iterator var5 = lpOptions.iterator(); var5.hasNext(); ++i) {
+            LpOption lpOption = (LpOption)var5.next();
+            lpOption.setLabel(labels[i]);
+        }
+
+        return lpOptions;
+    }
+}
+
+@Transaction(
+    jdbc = TrancationType.CLOSE
+)
+public class LpCardService {
+    public LpCardService() {
+    }
+
+    public boolean checkPermission(Integer id, String password) {
+        SysCompany company = S.sysCompanyService().getCompanyById(id);
+        return company.getPassword().equals(password);
+    }
+
+    public List<SysUser> getUserInfo(Integer companyId) {
+        return D.sysUserMapper().selectByCompanyId(companyId);
+    }
+
+    public void setClosedBookExam(Integer[] userIds) {
+        S.sysUserService().updateStatusById(userIds, Integer.valueOf(4));
+    }
+
+    @Transaction(
+        jdbc = TrancationType.OPEN
+    )
+    private void saveCards(List<LpCard> list) {
+        D.lpCardMapper().insertCards(list);
+    }
+
+    public synchronized boolean createCard(Integer[] userIds) throws Exception {
+        List sysEmptySeats = S.sysSeatService().get();
+        if(sysEmptySeats.isEmpty()) {
+            S.sysSeatService().createSeat();
+        }
+
+        int usersNO = userIds.length;
+        List seatVoList = S.sysSeatService().shuffleSeat(Integer.valueOf(usersNO));
+        List userList = S.sysUserService().getUsersById(userIds);
+        if(usersNO == seatVoList.size() && usersNO == userList.size() && seatVoList.size() == userList.size()) {
+            ArrayList seatList = new ArrayList();
+            ArrayList cardList = new ArrayList();
+            Date date = new Date();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy");
+            String year = format.format(date);
+
+            for(int i = 0; i < userIds.length; ++i) {
+                SysSeatVO seatVO = (SysSeatVO)seatVoList.get(i);
+                SysUserVO user = (SysUserVO)userList.get(i);
+                seatVO.setUserId(userIds[i]);
+                seatVO.setUpdateTime(date);
+                seatList.add(seatVO);
+                LpCard card = new LpCard();
+                card.setName(user.getUserName());
+                Integer roomNo = seatVO.getRoomNo();
+                Integer seatNo = seatVO.getSeatNo();
+                String roomNoStr = roomNo.intValue() < 10?"0" + String.valueOf(roomNo):String.valueOf(roomNo);
+                String seatNoStr = seatNo.intValue() < 10?"0" + String.valueOf(seatNo):String.valueOf(seatNo);
+                String cardNo = "320200" + year + roomNoStr + seatNoStr;
+                card.setCardNo(cardNo);
+                card.setBirthday(user.getBirthday());
+                card.setSex(user.getSex().intValue() == 1?"男":"女");
+                card.setCompany(user.getCompanyName());
+                card.setJobGrade(user.getJobGrade());
+                card.setExamStartTime(seatVO.getStartTime());
+                card.setExamEndTime(seatVO.getEndTime());
+                card.setAddress(seatVO.getRoomAddress());
+                card.setRoomNo(seatVO.getRoomNo());
+                card.setSeatNo(seatVO.getSeatNo());
+                card.setPhotoPath(user.getPhotoPath());
+                card.setUpdateTime(date);
+                card.setCreateTime(date);
+                card.setDeleted(Integer.valueOf(1));
+                card.setUserId(user.getId());
+                cardList.add(card);
+            }
+
+            S.lpCardService().saveCards(cardList);
+            S.sysSeatService().fillUser(seatList);
+            S.sysUserService().updateStatusById(userIds, Integer.valueOf(4));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public LpCard getById(Integer id) {
+        return D.lpCardMapper().selectByPrimaryKey(id);
+    }
+
+    public LpCard getByUserId(Integer userId) {
+        return D.lpCardMapper().selectByUserId(userId);
+    }
+}
+
+public class SysUserCtrl {
+    public SysUserCtrl() {
+    }
+
+    public void login() {
+        String username = W.getStringTrim(new String[]{"username"});
+        String password = W.getStringTrim(new String[]{"password"});
+        if(!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
+            ResultVO vo = S.managementService().login(username, password);
+            if(vo.isCode()) {
+                HttpSessionUtil.setUserId(vo.getUser().getId());
+                W.forward("/WEB-INF/pages/main.jsp");
+            } else {
+                W.getReq().setAttribute("result", vo);
+                W.forward("index.jsp");
+            }
+
+        } else {
+            throw new IllegalArgumentException("hzc exception: arguments were wrong");
+        }
+    }
+
+    public void ajaxUserManage() {
+        SysUserVO sysUserVO = (SysUserVO)W.packBean(SysUserVO.class);
+        List list = S.sysUserService().getUserManageList(sysUserVO);
+        W.writeJsonArray(list);
+    }
+}
+(function () {//工具集
+    var Tools = {
+        //a是否在数组b中
+        inArray: function (a, b) {
+            for (var i = 0; i < b.length; i++) {
+                if (a == b[i]) return i;
+            }
+            return -1;
+        },
+        //获取某年某月的天数
+        getNumberOfDays: function (year, month) {
+            if (this.inArray(month, [1, 3, 5, 7, 8, 10, 12]) > 0) return 31;
+            else if (this.inArray(month, [4, 6, 9, 11]) > 0) return 30;
+            else if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) return 29;
+            else return 28;
+        }
+    };
+//日期选择器类，传入日期div的id名，div的结构参考上面的html，同一个页面上可以有多个ID不同的日期选择器
+    var DateSelector = function (dateSelector) {
+        if (typeof dateSelector !== 'string') return false;
+        //获取DOM
+        this.dateSelector = document.getElementById(dateSelector);
+        this.dateSelectedBox = this.dateSelector.querySelector('.date-selected-box');
+        this.dateSelectBox = this.dateSelector.querySelector('.date-select-box');
+        this.dateSelectElement = {
+            year: this.dateSelector.querySelector('.date-select-year'),
+            month: this.dateSelector.querySelector('.date-select-month'),
+            day: this.dateSelector.querySelector('.date-select-day'),
+            sure: this.dateSelector.querySelector('.date-select-sure')
+        };
+        //定义option模板
+        this.optionTpl = {
+            normal: '<option>{$v}</option>',
+            selected: '<option selected>{$v}</option>'
+        };
+        this.dateObj = new Date();
+        //获取日期
+        this.today = {
+            year: this.dateObj.getFullYear(),
+            month: this.dateObj.getMonth() + 1,
+            day: this.dateObj.getDate()
+        };
+        //填充选项
+        this.fillSelectFields();
+        //绑定事件
+        this.bind();
+    };
+//定义方法
+    DateSelector.prototype = {
+        //显示/隐藏选项框
+        showSelectBox: function () {
+            this.dateSelectBox.style.display = 'block';
+        },
+        hideSelectBox: function () {
+            this.dateSelectBox.style.display = 'none';
+        },
+        //设置文本框的值，传入带有year,month,day属性的对象
+        fillSelectedBox: function (o) {
+            this.dateSelectedBox.value = o.year + '年' + o.month + '月' + o.day + '日';
+        },
+        //用从start到end的数字选项option填充某个select元素element，selected数为默认选中，option Template见上方定义
+        fillSelectField: function (element, start, end, selected) {
+            var tmp = [];
+            for (var i = start; i <= end; i++) {
+                var tpl = i === selected ? this.optionTpl.selected : this.optionTpl.normal;
+                tmp.push(tpl.replace('{$v}', i));
+            }
+            element.innerHTML = tmp.join('\n');
+        },
+        //填充日月年的选项
+        fillSelectFields: function () {
+            this.fillSelectField(this.dateSelectElement.year, this.today.year - 99, this.today.year, this.today.year);
+            this.fillSelectField(this.dateSelectElement.month, 1, 12, this.today.month);
+            this.fillSelectField(this.dateSelectElement.day, 1, Tools.getNumberOfDays(this.today.year, this.today.month), this.today.day);
+        },
+        //绑定事件
+        bind: function () {
+            //保存指向类的指针
+            var _this = this;
+            _this.dateSelectedBox.onclick = function () {
+                _this.showSelectBox();
+            };
+            _this.dateSelectElement.sure.onclick = function () {
+                _this.fillSelectedBox({
+                    year: _this.dateSelectElement.year.value,
+                    month: _this.dateSelectElement.month.value,
+                    day: _this.dateSelectElement.day.value
+                });
+                _this.hideSelectBox();
+            };
+            //当 年 或 月 的值改变时调整 日 的可选值
+            _this.dateSelectElement.year.onchange = _this.dateSelectElement.month.onchange = function () {
+                //为了方便计算，把dom中的alue转为整型
+                var y = parseInt(_this.dateSelectElement.year.value, 10),
+                    m = parseInt(_this.dateSelectElement.month.value, 10);
+                _this.fillSelectField(_this.dateSelectElement.day, 1, Tools.getNumberOfDays(y, m), 1);
+            };
+        }
+
+    };
+
+//实例化类
+    new DateSelector('date-selector-1');
+})()
+var gMonths = new Array("一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月");
+var WeekDay = new Array("日", "一", "二", "三", "四", "五", "六");
+var strToday = "今天";
+var strYear = "年";
+var strMonth = "月";
+var strDay = "日";
+var splitChar = "-";
+var startYear = 2000;
+var endYear = 2050;
+var dayTdHeight = 12;
+var dayTdTextSize = 12;
+var gcNotCurMonth = "#E0E0E0";
+var gcRestDay = "#FF0000";
+var gcWorkDay = "#444444";
+var gcMouseOver = "#79D0FF";
+var gcMouseOut = "#F4F4F4";
+var gcToday = "#444444";
+var gcTodayMouseOver = "#6699FF";
+var gcTodayMouseOut = "#79D0FF";
+var gdCtrl = new Object();
+var goSelectTag = new Array();
+var gdCurDate = new Date();
+var giYear = gdCurDate.getFullYear();
+var giMonth = gdCurDate.getMonth() + 1;
+var giDay = gdCurDate.getDate();
+function $() {
+    var elements = new Array();
+    for (var i = 0; i < arguments.length; i++) {
+        var element = arguments[i];
+        if (typeof(arguments[i]) == 'string') {
+            element = document.getElementById(arguments[i]);
+        }
+        if (arguments.length == 1) {
+            return element;
+        }
+        elements.Push(element);
+    }
+    return elements;
+}
+Array.prototype.Push = function () {
+    var startLength = this.length;
+    for (var i = 0; i < arguments.length; i++) {
+        this[startLength + i] = arguments[i];
+    }
+    return this.length;
+}
+String.prototype.HexToDec = function () {
+    return parseInt(this, 16);
+}
+String.prototype.cleanBlank = function () {
+    return this.isEmpty() ? "" : this.replace(/\s/g, "");
+}
+function checkColor() {
+    var color_tmp = (arguments[0] + "").replace(/\s/g, "").toUpperCase();
+    var model_tmp1 = arguments[1].toUpperCase();
+    var model_tmp2 = "rgb(" + arguments[1].substring(1, 3).HexToDec() + "," + arguments[1].substring(1, 3).HexToDec() + "," + arguments[1].substring(5).HexToDec() + ")";
+    model_tmp2 = model_tmp2.toUpperCase();
+    if (color_tmp == model_tmp1 || color_tmp == model_tmp2) {
+        return true;
+    }
+    return false;
+}
+function $V() {
+    return $(arguments[0]).value;
+}
+function fPopCalendar(evt, popCtrl, dateCtrl) {
+    evt.cancelBubble = true;
+    gdCtrl = dateCtrl;
+    fSetYearMon(giYear, giMonth);
+    var point = fGetXY(popCtrl);
+    with ($("calendardiv").style) {
+        left = point.x + "px";
+        top = (point.y + popCtrl.offsetHeight + 1) + "px";
+        visibility = 'visible';
+        zindex = '99';
+        position = 'absolute';
+    }
+    $("calendardiv").focus();
+}
+function fSetDate(iYear, iMonth, iDay) {
+    var iMonthNew = new String(iMonth);
+    var iDayNew = new String(iDay);
+    if (iMonthNew.length < 2) {
+        iMonthNew = "0" + iMonthNew;
+    }
+    if (iDayNew.length < 2) {
+        iDayNew = "0" + iDayNew;
+    }
+    gdCtrl.value = iYear + splitChar + iMonthNew + splitChar + iDayNew;
+    fHideCalendar();
+}
+function fHideCalendar() {
+    $("calendardiv").style.visibility = "hidden";
+    for (var i = 0; i < goSelectTag.length; i++) {
+        goSelectTag[i].style.visibility = "visible";
+    }
+    goSelectTag.length = 0;
+}
+function fSetSelected() {
+    var iOffset = 0;
+    var iYear = parseInt($("tbSelYear").value);
+    var iMonth = parseInt($("tbSelMonth").value);
+    var aCell = $("cellText" + arguments[0]);
+    aCell.bgColor = gcMouseOut;
+    with (aCell) {
+        var iDay = parseInt(innerHTML);
+        if (checkColor(style.color, gcNotCurMonth)) {
+            iOffset = (innerHTML > 10) ? -1 : 1;
+        }
+        iMonth += iOffset;
+        if (iMonth < 1) {
+            iYear--;
+            iMonth = 12;
+        } else if (iMonth > 12) {
+            iYear++;
+            iMonth = 1;
+        }
+    }
+    fSetDate(iYear, iMonth, iDay);
+}
+function Point(iX, iY) {
+    this.x = iX;
+    this.y = iY;
+}
+function fBuildCal(iYear, iMonth) {
+    var aMonth = new Array();
+    for (var i = 1; i < 7; i++) {
+        aMonth[i] = new Array(i);
+    }
+    var dCalDate = new Date(iYear, iMonth - 1, 1);
+    var iDayOfFirst = dCalDate.getDay();
+    var iDaysInMonth = new Date(iYear, iMonth, 0).getDate();
+    var iOffsetLast = new Date(iYear, iMonth - 1, 0).getDate() - iDayOfFirst + 1;
+    var iDate = 1;
+    var iNext = 1;
+    for (var d = 0; d < 7; d++) {
+        aMonth[1][d] = (d < iDayOfFirst) ? (iOffsetLast + d) * (-1) : iDate++;
+    }
+    for (var w = 2; w < 7; w++) {
+        for (var d = 0; d < 7; d++) {
+            aMonth[w][d] = (iDate <= iDaysInMonth) ? iDate++ : (iNext++) * (-1);
+        }
+    }
+    return aMonth;
+}
+function fDrawCal(iYear, iMonth, iCellHeight, iDateTextSize) {
+    var colorTD = " bgcolor='" + gcMouseOut + "' bordercolor='" + gcMouseOut + "'";
+    var styleTD = " valign='middle' align='center' style='height:" + iCellHeight + "px;font-weight:bolder;font-size:" + iDateTextSize + "px;";
+    var dateCal = "";
+    dateCal += "<tr>";
+    for (var i = 0; i < 7; i++) {
+        dateCal += "<td" + colorTD + styleTD + "color:#990099'>" + WeekDay[i] + "</td>";
+    }
+    dateCal += "</tr>";
+    for (var w = 1; w < 7; w++) {
+        dateCal += "<tr>";
+        for (var d = 0; d < 7; d++) {
+            var tmpid = w + "" + d;
+            dateCal += "<td" + styleTD + "cursor:pointer;' onclick='fSetSelected(" + tmpid + ")'>";
+            dateCal += "<span id='cellText" + tmpid + "'></span>";
+            dateCal += "</td>";
+        }
+        dateCal += "</tr>";
+    }
+    return dateCal;
+}
+function fUpdateCal(iYear, iMonth) {
+    var myMonth = fBuildCal(iYear, iMonth);
+    var i = 0;
+    for (var w = 1; w < 7; w++) {
+        for (var d = 0; d < 7; d++) {
+            with ($("cellText" + w + "" + d)) {
+                parentNode.bgColor = gcMouseOut;
+                parentNode.borderColor = gcMouseOut;
+                parentNode.onmouseover = function () {
+                    this.bgColor = gcMouseOver;
+                };
+                parentNode.onmouseout = function () {
+                    this.bgColor = gcMouseOut;
+                };
+                if (myMonth[w][d] < 0) {
+                    style.color = gcNotCurMonth;
+                    innerHTML = Math.abs(myMonth[w][d]);
+                } else {
+                    style.color = ((d == 0) || (d == 6)) ? gcRestDay : gcWorkDay;
+                    innerHTML = myMonth[w][d];
+                    if (iYear == giYear && iMonth == giMonth && myMonth[w][d] == giDay) {
+                        style.color = gcToday;
+                        parentNode.bgColor = gcTodayMouseOut;
+                        parentNode.onmouseover = function () {
+                            this.bgColor = gcTodayMouseOver;
+                        };
+                        parentNode.onmouseout = function () {
+                            this.bgColor = gcTodayMouseOut;
+                        };
+                    }
+                }
+            }
+        }
+    }
+}
+function fSetYearMon(iYear, iMon) {
+    $("tbSelMonth").options[iMon - 1].selected = true;
+    for (var i = 0; i < $("tbSelYear").length; i++) {
+        if ($("tbSelYear").options[i].value == iYear) {
+            $("tbSelYear").options[i].selected = true;
+        }
+    }
+    fUpdateCal(iYear, iMon);
+}
+function fPrevMonth() {
+    var iMon = $("tbSelMonth").value;
+    var iYear = $("tbSelYear").value;
+    if (--iMon < 1) {
+        iMon = 12;
+        iYear--;
+    }
+    fSetYearMon(iYear, iMon);
+}
+function fNextMonth() {
+    var iMon = $("tbSelMonth").value;
+    var iYear = $("tbSelYear").value;
+    if (++iMon > 12) {
+        iMon = 1;
+        iYear++;
+    }
+    fSetYearMon(iYear, iMon);
+}
+function fGetXY(aTag) {
+    var oTmp = aTag;
+    var pt = new Point(0, 0);
+    do {
+        pt.x += oTmp.offsetLeft;
+        pt.y += oTmp.offsetTop;
+        oTmp = oTmp.offsetParent;
+    } while (oTmp.tagName.toUpperCase() != "BODY");
+    return pt;
+}
+function getDateDiv() {
+    var noSelectForIE = "";
+    var noSelectForFireFox = "";
+    if (document.all) {
+        noSelectForIE = "onselectstart='return false;'";
+    } else {
+        noSelectForFireFox = "-moz-user-select:none;";
+    }
+    var dateDiv = "";
+    dateDiv += "<div id='calendardiv' onclick='event.cancelBubble=true' " + noSelectForIE + " style='" + noSelectForFireFox + "position:absolute;z-index:99;visibility:hidden;border:1px solid #999999;'>";
+    dateDiv += "<table border='0' bgcolor='#E0E0E0' cellpadding='1' cellspacing='1' >";
+    dateDiv += "<tr>";
+    dateDiv += "<td><input type='button' id='PrevMonth' value='<' style='height:20px;width:20px;font-weight:bolder;' onclick='fPrevMonth()'>";
+    dateDiv += "</td><td><select id='tbSelYear' style='border:1px solid;' onchange='fUpdateCal($V(\"tbSelYear\"),$V(\"tbSelMonth\"))'>";
+    for (var i = startYear; i < endYear; i++) {
+        dateDiv += "<option value='" + i + "'>" + i + strYear + "</option>";
+    }
+    dateDiv += "</select></td><td>";
+    dateDiv += "<select id='tbSelMonth' style='border:1px solid;' onchange='fUpdateCal($V(\"tbSelYear\"),$V(\"tbSelMonth\"))'>";
+    for (var i = 0; i < 12; i++) {
+        dateDiv += "<option value='" + (i + 1) + "'>" + gMonths[i] + "</option>";
+    }
+    dateDiv += "</select></td><td>";
+    dateDiv += "<input type='button' id='NextMonth' value='>' style='height:20px;width:20px;font-weight:bolder;' onclick='fNextMonth()'>";
+    dateDiv += "</td>";
+    dateDiv += "</tr><tr>";
+    dateDiv += "<td align='center' colspan='4'>";
+    dateDiv += "<div style='background-color:#cccccc'><table width='100%' border='0' cellpadding='3' cellspacing='1'>";
+    dateDiv += fDrawCal(giYear, giMonth, dayTdHeight, dayTdTextSize);
+    dateDiv += "</table></div>";
+    dateDiv += "</td>";
+    dateDiv += "</tr><tr><td align='center' colspan='4' nowrap>";
+    dateDiv += "<span style='cursor:pointer;font-weight:bolder;' onclick='fSetDate(giYear,giMonth,giDay)' onmouseover='this.style.color=\"" + gcMouseOver + "\"' onmouseout='this.style.color=\"#000000\"'>" + strToday + ":" + giYear + strYear + giMonth + strMonth + giDay + strDay + "</span>";
+    dateDiv += "</tr></tr>";
+    dateDiv += "</table></div>";
+    return dateDiv;
+}
+with (document) {
+    onclick = fHideCalendar;
+    write(getDateDiv());
+}
+
+(function () {
+
+    /**
+     * 生成js模板
+     * @param {Object} templateStr
+     * @param {Object} data
+     */
+    function render(templateStr, data) {
+        return templateStr.replace(/\{([\w\.]*)\}/g, function (str, key) {
+            var keys = key.split("."),
+                v = data[keys.shift()];
+            for (var i = 0, l = keys.length; i < l; i++)
+                v = v[keys[i]];
+            return (typeof v !== "undefined" && v !== null) ? v : "";
+        });
+    }
+
+    /**
+     * 更新用户答题次数+1
+     * @param questionId
+     */
+    function updateAnswerTimes() {
+
+        Common.setTimeLimit();
+        if (window.__questionId__)
+            $.ajax({
+                type: 'POST',
+                url: Routers.pufa.study.updateBMCLTTimes,
+                data: {
+                    questionId: window.__questionId__,
+                    type: 1
+                },
+                success: function (data) {
+                },
+                error: function () {
+                }
+            });
+    }
+
+
+    /**
+     * 初始化答题卡
+     */
+    function initQuestionCardShoucang() {
+        $.ajax({
+            type: 'post',
+            url: Routers.pufa.collect.getCollectQuestions,
+            success: function (data) {
+
+                var my_question = data[0];
+                var panduan = [];
+                var danxuan = [];
+                var duoxuan = [];
+                for (var a = 0; a < data.length; a++) {
+                    var _question = data[a];
+                    switch (_question.type) {
+                        case '判断题':
+                            panduan.push(_question);
+                            break;
+                        case '单选题':
+                            danxuan.push(_question);
+                            break;
+                        case '多选题':
+                            duoxuan.push(_question);
+                            break;
+                    }
+                }
+                var panduanYeshu = 1;
+                var danxuanYeshu = 1;
+                var duoxuanYeshu = 1;
+                var panduanHtmlStr = '';
+                var danxuanHtmlStr = '';
+                var duoxuanHtmlStr = '';
+                var questionAllStr = '';//question的空div
+                var htmlFirstDiv = '<div class="my-question-card-tab" data-ye="{ye}">';
+                var templateHtml = $('#template-shoucang-question-card-id').html();
+                panduanHtmlStr += render(htmlFirstDiv, {ye: panduanYeshu});
+                for (var b = 0; b < panduan.length; b++) {
+                    var question = panduan[b];
+                    question.isDisplay = 'none';
+                    question.lightClass = '';
+                    if (question.answerTime) {
+                        question.isDisplay = 'block';
+                        question.lightClass = 'my-btn-tihao-answer';
+                    }
+                    panduanHtmlStr += render(templateHtml, question);
+                    questionAllStr += initEmptyQuestionListDomShoucang(question);
+                }
+                panduanHtmlStr += '</div>';
+                danxuanHtmlStr += render(htmlFirstDiv, {ye: danxuanYeshu});
+                for (var b = 0; b < danxuan.length; b++) {
+                    var question = danxuan[b];
+                    danxuanHtmlStr += render(templateHtml, question);
+                    questionAllStr += initEmptyQuestionListDomShoucang(question);
+                }
+                danxuanHtmlStr += '</div>';
+                duoxuanHtmlStr += render(htmlFirstDiv, {ye: duoxuanYeshu});
+                for (var c = 0; c < duoxuan.length; c++) {
+                    var question = duoxuan[c];
+                    duoxuanHtmlStr += render(templateHtml, question);
+                    questionAllStr += initEmptyQuestionListDomShoucang(question);
+                }
+                duoxuanHtmlStr += '</div>';
+
+                //初始化questionCard
+                $('#shoucang-danxuanti-id').append(danxuanHtmlStr);
+                $('#shoucang-panduanti-id').append(panduanHtmlStr);
+                $('#shoucang-duoxuanti-id').append(duoxuanHtmlStr);
+                /**
+                 * 排序标题
+                 */
+                refreshSortNum();
+                //初始化所有的QuestionDetail的div，用来存储所有的question
+                //点击单个question时加载详细的question
+                $('#shoucang-question-detail-id').html(questionAllStr);
+                try {
+                    var ____questionId = my_question.questionId;
+                    getQuestion(____questionId);
+                } catch (e) {
+                }
+                $('#shoucang-question-detail-id').children().first().show();
+                traceQuestionTab(____questionId)
+                traceQuestion(____questionId);
+                updateAnswerTimes();
+                window.__questionId__ = ____questionId;
+            }
+        });
+    }
+
+    /**
+     * 点击每题事件
+     */
+    function eventQuestionClickShoucang() {
+        $('.tab-content').delegate('.my-btn-shoucang-tihao', 'click', function (evt) {
+            if (Common.timeLimit()) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                var _questionId = $(this).attr('data-question-id');
+                var _cl = $('#shoucang-' + _questionId).children().length;
+                if (_cl < 1) {
+                    getQuestion(_questionId);
+                }
+                $('#shoucang-question-detail-id').children().hide();
+                $('#shoucang-' + _questionId).show();
+                traceQuestion(_questionId);
+                traceQuestionTab(_questionId);
+                updateAnswerTimes();
+                window.__questionId__ = _questionId;
+            }
+        });
+    }
+
+    /**
+     * 获取空questionDom
+     * 每个空的div带questionId
+     * @param data
+     */
+    function initEmptyQuestionListDomShoucang(questionDetail) {
+        var templateDetailHtml = $('#template-shoucang-question-detail-empty-id').html();
+        return render(templateDetailHtml, questionDetail);
+    }
+
+    /**
+     * 获取question
+     * @param questionId
+     */
+    function getQuestion(questionId) {
+        $.ajax({
+            type: "POST",
+            url: Routers.pufa.study.getQuestionDetail,
+            data: {questionId: questionId},
+            success: function (data) {
+
+                //初始化选项
+                var templateOption = $('#template-shoucang-option-id').html();
+                var options = data.options;
+                var questiontype = data.type;
+                var _type = 'radio';
+                if (questiontype == '多选题') {
+                    _type = 'checkbox';
+                }
+                var htmlOptionsStr = '';
+                for (var o = 0; o < options.length; o++) {
+                    var option = options[o];
+                    option.type = _type;
+                    var label = 'A';
+                    switch (o) {
+                        case 0:
+                            break;
+                        case 1:
+                            label = 'B';
+                            break;
+                        case 2:
+                            label = 'C';
+                            break;
+                        case 3:
+                            label = 'D';
+                            break;
+                        case 4:
+                            label = 'E';
+                            break;
+                        case 5:
+                            label = 'F';
+                            break;
+                    }
+                    option.label = label;
+                    htmlOptionsStr += render(templateOption, option);
+                }
+                //初始化question
+                var QuestionStr = '';
+                var templateQuestionUp = $('#template-shoucang-question-detail-up-id').html();
+                var templateQuestionDown = $('#template-shoucang-question-detail-down-id').html();
+                QuestionStr += render(templateQuestionUp, data);
+                QuestionStr += htmlOptionsStr;
+                QuestionStr += render(templateQuestionDown, data);
+                $('#shoucang-' + questionId).html(QuestionStr);
+                var options = $('#shoucang-' + questionId).children().eq(2).children();
+                judgeAnswer(options, questionId);
+                traceQuestion(questionId);
+            }
+        });
+    }
+
+    /**
+     * 注册切换题事件
+     */
+    function eventShoucangQuestionChangeShoucang() {
+        $('#shoucang-question-detail-id').delegate('.my-btn-shoucang-question-prev', 'click', function () {
+            if (Common.timeLimit()) {
+                var _questionId = $(this).attr('data-question-id');
+
+                var prevQuestion = $('#shoucang-' + _questionId).prev();
+                if (prevQuestion[0]) {
+                    var nQuestionId = $(prevQuestion).attr('data-question-id');
+                    var exist = $('#shoucang-' + nQuestionId).children().size();
+                    if (exist == 0) {
+                        getQuestion(nQuestionId);
+                    }
+                    $('#shoucang-' + _questionId).hide().prev().show();
+                    traceQuestion(nQuestionId);
+                    traceQuestionTab(nQuestionId);
+                    updateAnswerTimes();
+                    window.__questionId__ = nQuestionId;
+                }
+            }
+        });
+        $('#shoucang-question-detail-id').delegate('.my-btn-shoucang-question-next', 'click', function () {
+            if (Common.timeLimit()) {
+                var options = $(this).parent().parent().prev().children();
+                var _questionId = $(this).attr('data-question-id');
+                judgeAnswer(options, _questionId);
+
+                var nextQuestion = $('#shoucang-' + _questionId).next();
+                if (nextQuestion[0]) {
+                    var nQuestionId = $(nextQuestion).attr('data-question-id');
+                    var exist = $('#shoucang-' + nQuestionId).children().size();
+                    if (exist == 0) {
+                        getQuestion(nQuestionId);
+                    }
+                    $('#shoucang-' + _questionId).hide().next().show();
+                    traceQuestion(nQuestionId);
+                    traceQuestionTab(nQuestionId);
+                    updateAnswerTimes();
+                    window.__questionId__ = nQuestionId;
+                }
+            }
+        });
+    }
+
+    /**
+     * 判断试题答案
+     * @param options
+     */
+    function judgeAnswer(options, questionId) {
+        //用户作答答案
+        var userAnswer = [];
+        //正确答案
+        var questionAnswer = [];
+        for (var p = 0; p < options.length; p++) {
+            var _option = options[p];
+            var key = $(_option).attr('data-key');
+            var _ukey = $(_option).children().first().prop('checked');
+            if (_ukey) {
+                userAnswer.push($(_option).attr('data-label'));
+            }
+            if (key == 1) {
+                questionAnswer.push($(_option).attr('data-label'));
+            }
+        }
+        if ($("#xuexi-daan-" + questionId).length > 0) {
+            return;
+        }
+        $("#shoucang-" + questionId).children().eq(2).append('<span id="xuexi-daan-' + questionId + '" style="color: red;font-size:18px;margin-left:30px;">正确答案：' + questionAnswer.join(',') + '</span>');
+    }
+
+    /**
+     * 取消收藏题
+     */
+    function eventShoucangShoucang() {
+        $('#shoucang-question-detail-id').delegate('.my-collect-quxiao', 'click', function () {
+            var $this = $(this);
+            bootbox.confirm({
+                buttons: {
+                    confirm: {
+                        label: '确认'
+                    },
+                    cancel: {
+                        label: '取消',
+                        className: 'hidden-cancel-btn'
+                    }
+                },
+                message: '<span style="font-size:22px!important;">确定要取消收藏本题吗？</span>',
+                callback: function (result) {
+                    if (result) {
+                        var questionId = $this.attr('data-question-id');
+                        var nQuestionId = '';
+
+                        if ($('#shoucang-' + questionId).next().size() > 0) {
+                            nQuestionId = $('#shoucang-' + questionId).next().attr('data-question-id');
+                            var exist = $('#shoucang-' + nQuestionId).children().size();
+                            if (exist == 0) {
+                                getQuestion(nQuestionId);
+                            }
+                            $('#shoucang-' + questionId).next().show();
+                            _sync(questionId, nQuestionId);
+                            return;
+                        }
+                        if ($('#shoucang-' + questionId).prev().size() > 0) {
+                            nQuestionId = $('#shoucang-' + questionId).prev().attr('data-question-id');
+                            var exist = $('#shoucang-' + nQuestionId).children().size();
+                            if (exist == 0) {
+                                getQuestion(nQuestionId);
+                            }
+
+                            $('#shoucang-' + questionId).prev().show();
+                            _sync(questionId, nQuestionId);
+                            return;
+                        }
+                        $('#shoucang-' + questionId).remove();
+                        $('#shoucang-card-' + questionId).remove();
+                        _sync(questionId, nQuestionId);
+                    }
+                },
+                title: "提示"
+            });
+        });
+    }
+
+    /**
+     * 收藏同步
+     * @param questionId
+     * @param nQuestionId
+     * @private
+     */
+    function _sync(questionId, nQuestionId) {
+        $('#shoucang-' + questionId).remove();
+        $('#shoucang-card-' + questionId).remove();
+        refreshSortNum();
+        traceQuestion(nQuestionId);
+        traceQuestionTab(nQuestionId);
+        var _delete = 'false';
+        $.ajax({
+            type: 'POST',
+            url: Routers.pufa.study.saveQuestionCollect,
+            data: {
+                questionId: questionId,
+                deleted: _delete
+            },
+            success: function () {
+            }
+        })
+    }
+
+    /**
+     * 重新排序
+     */
+    function refreshSortNum() {
+        var panduanas = $('#shoucang-panduanti-id').children().children();
+        $(panduanas).each(function (i) {
+            $(this).html(i + 1);
+        });
+        var danxuanas = $('#shoucang-danxuanti-id').children().children();
+        $(danxuanas).each(function (i) {
+            $(this).html(i + 1);
+        });
+        var duoxuanas = $('#shoucang-duoxuanti-id').children().children();
+        $(duoxuanas).each(function (i) {
+            $(this).html(i + 1);
+        });
+    }
+
+    /**
+     * 点击答题区题号事件
+     */
+    function eventQieTi() {
+        $('#shoucang-question-detail-id').delegate('.my-question', 'click', function (evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            var _questionId = $(this).attr('data-question-id');
+            traceQuestionTab(_questionId);
+            traceQuestion(_questionId);
+        });
+    }
+
+    /**
+     * 高亮显示当前题
+     * @param questionId
+     */
+    function traceQuestion(questionId) {
+        window.localStorage.setItem('__currentUserQuestionIdCollect', questionId);
+        $('#my-shoucang-tab-content').find('.my-current-question').removeClass('my-current-question');
+        $('#shoucang-card-' + questionId).addClass('my-current-question');
+        var num = $('#shoucang-card-' + questionId).html();
+        $('#shoucang-' + questionId).children().eq(1).children('p').children().children('span').html(num);
+    }
+
+    /**
+     * 在答题卡区
+     * 显示当前试题所在的页
+     */
+    function traceQuestionTab(questionId) {
+        var obj = $('#shoucang-card-' + questionId);//答题卡区的当前试题
+        var ye = $(obj).parent();//当前题所在的页
+        var _tabContent = $(ye).parent().parent();//tab的内容：判断题、单选题、多选题
+        var _tabs = $(_tabContent).parent().prev().children();//答题卡区的tabs
+        var _active = $(_tabContent).hasClass('active');//是否当前tab为当前题所在tab
+
+        //切换到当前题所在的tab页
+        if (!_active) {
+            //显示当前题所在的答题卡区
+            $(_tabContent).siblings('.tab-pane').each(function () {
+                $(this).removeClass('active');
+            });
+            $(_tabContent).addClass('active');
+
+            //高亮当前题所在答题卡区的tab
+            var _href = $(_tabContent).attr('id');
+            $(_tabs).each(function () {
+                $(this).removeClass('active');
+                if ($(this).children().first().attr('href') == ('#' + _href)) {
+                    $(this).addClass('active');
+                }
+            });
+        }
+    }
+
+    /**
+     * 清空收藏题库
+     */
+    function clearBankCollect() {
+        $('.my-clear-bank').on('click', function () {
+            var type = $(this).attr('data-type');
+            bootbox.confirm({
+                buttons: {
+                    confirm: {
+                        label: '确认'
+                    },
+                    cancel: {
+                        label: '取消',
+                        className: 'hidden-cancel-btn'
+                    }
+                },
+                message: '<span style="font-size:22px!important;">清空题库后不能恢复，确认清空吗？</span>',
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: Routers.pufa.collect.clearCollect,
+                            type: 'POST',
+                            data: {type: type},
+                            success: function (data) {
+                                $('#shoucang-question-detail-id').html('');
+                                $('#shoucang-panduanti-id').html('');
+                                $('#shoucang-danxuanti-id').html('');
+                                $('#shoucang-duoxuanti-id').html('');
+                            }
+                        });
+                    }
+                },
+                title: "提示"
+            });
+        });
+    }
+
+    $(function () {
+        initQuestionCardShoucang();
+        eventQuestionClickShoucang();
+        eventShoucangQuestionChangeShoucang();
+        eventShoucangShoucang();
+        eventQieTi();
+        clearBankCollect();
+    });
+})();
+<%@ page import="com.hzc.util.alias.S" %>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%
+  String path = request.getContextPath();
+  String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>李沧区干部普法学习测试系统</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="bookmark" type="image/x-icon" href="${basePath}assets/system/pufa/img/logo.ico"/>
+  <link rel="shortcut icon" href="${basePath}assets/system/pufa/img/logo.ico"/>
+  <link rel="icon" href="${basePath}assets/system/pufa/img/logo.ico"/>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- basic styles -->
+
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/font-awesome.min.css"/>
+
+  <!--[if IE 7]>
+  <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css"/>
+  <![endif]-->
+
+  <!-- page specific plugin styles -->
+
+  <!-- fonts -->
+
+
+  <link rel="stylesheet" href="assets/css/ace.min.css"/>
+  <link rel="stylesheet" href="assets/css/ace-rtl.min.css"/>
+
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="assets/css/ace-ie.min.css"/>
+  <![endif]-->
+
+  <!-- inline styles related to this page -->
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+  <!--
+    判断IE浏览器版本小于IE8，则直接提示更新。
+  -->
+  <!--[if lte IE 7]>
+  <script>window.location.href = 'http://cdn.dmeng.net/upgrade-your-browser.html?referrer=' + location.href;</script>
+  <![endif]-->
+  <!--[if lt IE 9]>
+  <script src="assets/js/html5shiv.js"></script>
+  <script src="assets/js/respond.min.js"></script>
+  <![endif]-->
+
+  <style type="text/css">
+    .bg {
+      /*background: url(assets/system/pufa/img/dw0.jpg);*/
+      filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+      -moz-background-size: 100% 100%;
+      background-size: 100% 100%;
+      background-color: #1687d5;
+    }
+    .my-button {
+      width: 170px;
+      height: 40px;
+      color: white;
+      font-weight: 500;
+      text-align: center;
+      line-height: 18px;
+      font-size: 18px;
+      background: #004c82 !important;
+      border-radius: 5px;
+      border: 2px solid #004c82 !important;
+      font-family: "Microsoft YaHei";
+      letter-spacing: 0.3em !important;
+    }
+    .my-button:hover{
+       border: 1px solid #cccccc!important;
+        }
+    .my-button-join {
+      width: 100px;
+      height: 35px;
+      color: white;
+      text-align: center;
+      background: #12a5eb;
+      transition: all 0.15s ease 0s;
+      font-weight: 800;
+      /*float: right;*/
+      border-radius: 5px;
+    }
+
+    .my-button-join:hover {
+      text-decoration: none;
+      background-color: #048cb9!important;
+      border: 1px solid #005aa7;
+    }
+
+    .my-title-font {
+      font-size: 38px;
+      font-weight: 600;
+      color: white;
+      line-height: 48px;
+      font-family: "微软雅黑";
+      letter-spacing: 3px;
+      text-shadow: 1px 1px 3px #cccccc;
+      -webkit-text-shadow: #ccc 1px 0 0, #ccc 0 1px 0, #959494 -1px 0 0, #959494 0 -1px 0;
+      -moz-text-shadow: #ccc 1px 0 0, #ccc 0 1px 0, #000 -1px 0 0, #000 0 -1px 0;
+      text-shadow: 1px  1px  1px rgb(0,0,0,0.1);
+      *filter: Glow(Color=#000, Strength=1);
+    }
+
+    .my-border-radius {
+      border-radius: 20px;
+    }
+  </style>
+  <!--[if lte IE 8]>
+  <style>
+    .my-login-btns-for-ie {
+
+    .my-login-btns-for-ie {
+      top: 50px !important;
+    }
+   </style>
+  <![endif]-->
+</head>
+
+<body class="login-layout bg">
+<div class="main-container" style="margin-top:5%;">
+  <div class="main-content">
+    <div>
+      <div class="center">
+        <h1>
+          <img src="assets/system/pufa/img/biaozi.png">
+          <span class="my-title-font">李沧区干部法律法规学习测试系统</span>
+        </h1>
+      </div>
+    </div>
+    <div class="login-container" style="width: 700px !important; position: relative;">
+      <div id="login-box" class="login-box visible widget-box no-border my-border-radius"
+           style="background-color: #B0B0B0 !important;position: relative!important;">
+        <div class="widget-body my-border-radius">
+          <div class="widget-main my-border-radius">
+            <%--<div class="row" style="height: 100px;"></div>--%>
+            <div id="login-form-id" class="row" style="height: 260px !important;display: block;">
+              <div class="col-xs-7">
+                <h4 class="header blue lighter bigger" style="font-weight: 800;">
+                  <img src="${basepath}assets/system/pufa/img/logo-user.png"
+                       style="width:22px;height:auto;margin-top: -5px;">
+                  <%--<i class="icon-coffee blue"></i>--%>
+                  学员登录
+
+                </h4>
+
+                <div class="space-6"></div>
+                <form action="UserCtrl.lcpf.do" method="post"
+                      onsubmit="return validate(this);"
+                      style="padding: 0px 40px 10px 0px !important;border-right: 1px solid lightgray;margin-right: -10px;">
+                  <fieldset>
+                    <div style="margin-bottom: 15px;margin-top:10px;font-size: 15px;font-weight: bold;">
+                      身份证号码：
+                    </div>
+                    <label class="block clearfix" style="margin-top: 15px !important;">
+														<span class="block input-icon input-icon-right">
+															<input id="idCard" name="username" type="text"
+                                     class="form-control"
+                                     placeholder="请输入您的身份证号"/>
+															<%--<i class="icon-user"></i>--%>
+														</span>
+                    </label>
+
+                    <div id="login-message-id" style="color: red;text-align: center;height: 1px;"></div>
+                    <div class="clearfix"
+                         style="margin-top: 20px !important;text-align: right;">
+                      <%--<label class="inline" style="display: none;">--%>
+                      <%--<input id="remember-me-id" type="checkbox" class="ace"/>--%>
+                      <%--<span class="lbl"> 记住我</span>--%>
+                      <%--</label>--%>
+                      <button id="submit-btn-id" type="submit"
+                              class="my-button-join">
+                        登&nbsp;&nbsp;录
+                      </button>
+                      <button id="enroll-btn-id" type="button" onclick="nextStep()"
+                              class="my-button-join">
+                        注&nbsp;&nbsp;册
+                      </button>
+                    </div>
+
+                    <div class="space-4"></div>
+                  </fieldset>
+                </form>
+              </div>
+              <div class="col-xs-5">
+                <h4 class="header blue lighter bigger" style="font-weight: 800;">
+                  <img src="${basepath}assets/system/pufa/img/logo-shaomiao.png"
+                       style="width:22px;height:auto;margin-top: 0px;">
+                  <%--<i class="icon-group blue"></i>--%>
+                  请扫描二维码下载安装
+                </h4>
+
+                <div class="space-6"></div>
+                <div class="row">
+                  <!--
+                  <div class="col-xs-6">安卓手机:</br>
+                    <img src="assets/system/pufa/img/erweima/android-ccstudy-8090.png"
+                         style="width: 100%;">
+                  </div>
+                  <div class="col-xs-6">苹果手机:</br>
+                    <img src="assets/system/pufa/img/erweima/lp-ios.png"
+                         style="width: 100%;">
+                  </div>
+                  -->
+                  <div class="col-xs-2"></div>
+                  <div class="col-xs-8" style="text-align: center;">
+                    <img src="assets/system/pufa/img/erweima/licangsifa.png"
+                         style="width: 100%;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <%--学员注册--%>
+            <div id="enroll-form-div-id" class="row" style="display: none;">
+              <div class="col-xs-12">
+                <h4 class="header blue lighter bigger" style="font-weight: 800;">
+                  <img src="${basepath}assets/system/pufa/img/logo-user.png"
+                       style="width:22px;height:auto;margin-top: -5px;">
+                  学员注册
+                </h4>
+
+                <div class="space-6"></div>
+                <form id="enroll-form" action="UserCtrl.enroll.do" method="post" class="form-horizontal"
+                      style="padding: 0px 40px 10px 0px !important;">
+                  <fieldset>
+
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label no-padding-right"> 身份证号码：</label>
+
+                      <div class="col-sm-7">
+                        <input type="text" id="enrollIdCard" name="idCard" class="col-xs-10 col-sm-10"
+                               placeholder="请输入您的身份证号" onblur="checkUser(this);">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label no-padding-right"> 姓名：</label>
+
+                      <div class="col-sm-7">
+                        <input type="text" id="enrollUserName" name="username" class="col-xs-10 col-sm-10"
+                               placeholder="请输入您的姓名">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label no-padding-right"> 单位：</label>
+
+                      <div class="col-sm-7">
+                        <c:set var="companys"
+                               value="<%=S.sysCompanyService().listStandardCompanies()%>"/>
+                        <select id="company" onchange="setCompany();" class="col-xs-10 col-sm-10">
+                          <option value="">请选择单位</option>
+                          <c:forEach items="${companys}" var="company" varStatus="status">
+                            <option value="${company.id}"
+                                    data-val="${company.name}">${company.name}</option>
+                          </c:forEach>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-sm-5 control-label no-padding-right"> </label>
+
+                      <div class="col-sm-7">
+                        如果没有您的单位，请点击<a href="javascript:void(0);" onclick="addOtherCompany()">[其他]</a>
+                      </div>
+                    </div>
+                    <div class="form-group" id="otherCompanyDiv" style="display:none;">
+                      <label class="col-sm-5 control-label no-padding-right"> </label>
+
+                      <div class="col-sm-7">
+                        <span id="otherCompanySpan" class="my-self-company"></span>
+                        <input type="hidden" name="companyId" id="otherCompanyInput">
+                        <button type="button" onclick="setCompany();" class="my-button-join btn-info"
+                                style="height: 28px;width:60px;margin:0 10px;">删除
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div id="enroll-message-id" class="col-sm-12"
+                           style="color: red;height: 15px;text-align: center;"></div>
+                    </div>
+                    <div class="clearfix"
+                         style="margin-top: 25px !important;text-align: center;">
+                      <button type="button" onclick="prevStep()"
+                              class="my-button-join" >
+                        返&nbsp;&nbsp;回
+                      </button>
+                      <button type="button" onclick="enroll()"
+                              class="my-button-join">
+                        注&nbsp;&nbsp;册
+                      </button>
+                    </div>
+                    <div class="space-4"></div>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /widget-body -->
+
+      <div class="center position-relative my-login-btns-for-ie"
+           style="position: relative!important;padding-top: 50px;">
+        <div class="row">
+          <div class="col-xs-4">
+            <a  class="btn btn-primary my-button
+                       <%--disabled" href="javascript:;">--%>
+              " href="CommonCtrl.goWithCompanyJsp.do?path=/WEB-INF/pages/enrollment/sign.jsp">
+              网上报名
+            </a>
+          </div>
+          <div class="col-xs-4">
+            <!--== href="CommonCtrl.goTo.do?path=/WEB-INF/pages/card/print_card.jsp;"-->
+            <a class="btn btn-primary my-button
+            <%--disabled" href="javascript:;">--%>
+              " href="CommonCtrl.goWithCompanyJsp.do?path=/WEB-INF/pages/card/print_card.jsp">
+              打印准考证
+            </a>
+          </div>
+          <div class="col-xs-4">
+            <%--href="javascript:openForFullScreen('CommonCtrl.goTo.do?path=/WEB-INF/pages/exam/login.jsp');">--%>
+            <a class="btn btn-primary my-button
+            <%--disabled" href="javascript:void(0);">--%>
+              " href="CommonCtrl.goTo.do?path=/WEB-INF/pages/exam/login.jsp">
+              网上考试
+            </a>
+          </div>
+          <%--<div class="col-xs-3">--%>
+            <!--
+                 href="CommonCtrl.goTo.do?path=/WEB-INF/pages/management/menu.jsp;" -->
+            <%--<a class="btn btn-primary my-button--%>
+            <%--disabled" href="javascript:;">--%>
+              <%--" href="CommonCtrl.goTo.do?path=/WEB-INF/pages/management/menu.jsp">--%>
+              <%--考试管理--%>
+            <%--</a>--%>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.col -->
+  </div>
+</div>
+<!-- /.main-container -->
+
+<!-- basic scripts -->
+
+<!--[if !IE]> -->
+
+<script src="assets/js/jquery-2.0.3.min.js"></script>
+
+<!-- <![endif]-->
+
+<!--[if IE]>
+<script src="assets/js/jquery-1.10.2.min.js"></script>
+<![endif]-->
+
+<!--[if !IE]> -->
+
+<script type="text/javascript">
+  window.jQuery || document.write("<script src='assets/js/jquery-2.0.3.min.js'>" + "<" + "/script>");
+</script>
+
+<!-- <![endif]-->
+
+<!--[if IE]>
+<script type="text/javascript">
+  window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>" + "<" + "/script>");
+</script>
+<![endif]-->
+
+<script type="text/javascript">
+  if ("ontouchend" in document) document.write("<script src='assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+</script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/typeahead-bs2.min.js"></script>
+<script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="assets/js/jquery.ui.touch-punch.min.js"></script>
+<script src="assets/js/bootbox.min.js"></script>
+
+<!-- ace scripts -->
+
+<script src="assets/js/ace-elements.min.js"></script>
+<script src="config.js"></script>
+<style>
+  .my-self-company {
+    margin-right: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-table;
+    height: 25px;
+    border: 1px solid;
+    margin-top: 5px;
+    padding: 3px 2px 0px 2px;
+  }
+
+  .modal-dialog {
+    padding-top: 10%;
+  }
+</style>
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+  $(function () {
+    var loginMessage = '${requestScope.loginMessage}';
+    var mess = '${requestScope.message}';
+    if (loginMessage && loginMessage != '') {
+      setMessage('login-message-id', mess);
+    } else if (loginMessage != '') {
+      nextStep();
+      setMessage('enroll-message-id', mess);
+    }
+  });
+  /**
+   * 删除其他类单位，同时设置companyid的值
+   */
+  function setCompany() {
+    $('#otherCompanyDiv').hide();
+    $('#otherCompanyInput').val($('#company').val());
+  }
+  /**
+   * 选择其他类中的单位
+   */
+  function selectCompany(obj) {
+    $('#otherCompanyDiv').show();
+    var companyId = $(obj).attr('data-id');
+    var companyName = $(obj).attr('data-name');
+    $('#otherCompanySpan').html(companyName);
+    $('#otherCompanyInput').val(companyId);
+    $('.bootbox-close-button').click();
+    $('#company').val('');
+  }
+  /**
+   * 用户手动添加单位
+   */
+  function addSelfCompany() {
+    var company = $.trim($('#newCompany').val());
+    if (company == "") {
+      setMessage('companyMess', '请填写单位');
+      return;
+    }
+    $.ajax({
+      url: Routers.pufa.user.addSelfCompany,
+      type: 'post',
+      data: {company: company},
+      success: function (data) {
+        if (data.success) {
+          var companyId = data.message;
+          var html = '<div class="my-self-company" onclick="selectCompany(this)" data-id="' + companyId + '" data-name="' + company + '">' + company + '</div>';
+          $('#addCompany').before(html);
+        } else {
+          setMessage('companyMess', data.message);
+        }
+      }, error: function () {
+        setMessage('companyMess', '系统繁忙，请稍候再试');
+        return;
+      }
+    })
+  }
+  /**
+   * 选择其他单位
+   */
+  function addOtherCompany() {
+    $.ajax({
+      type: 'POST',
+      url: Routers.pufa.user.getOtherCompanies,
+      success: function (data) {
+        var html = '<div style="height: 30px;font-weight: 700;border-bottom: 1px solid;margin-bottom: 5px;">请选择其他单位</div>';
+        if (data.length > 0) {
+          for (var i = 0; i < data.length; i++) {
+            var com = data[i];
+            html += '<div class="my-self-company" onclick="selectCompany(this)" data-id="' + com.id + '" data-name="' + com.name + '">' + com.name + '</div>'
+          }
+        }
+        html += '<div id="addCompany" style="margin-top: 10px;border-top:1px solid;">' +
+            '<div>如果依然没有，请手动添加：</div><input id="newCompany" type="text">' +
+            '<button type="button" onclick="addSelfCompany();" class="my-button-join btn-info" style="height: 28px;width:60px;margin:0 10px;">添加</button>' +
+            '<span id="companyMess" style="color:red;"><span>' +
+            '</div>';
+        bootbox.dialog({
+          message: html
+        });
+      }
+    });
+  }
+  /**
+   * 检查注册时，身份证是否可用
+   */
+  function checkUser(obj) {
+    var idCard = $(obj).val();
+    $.post(Routers.pufa.enrollment.ajaxCheckIdCardDup, {idCard: idCard}, function (json) {
+      if (json && !json.success) {
+        setMessage('enroll-message-id', json.message)
+        $(obj).focus();
+      }
+    }, 'JSON');
+  }
+
+  /**
+   * 设置信息
+   */
+  function setMessage(obj, mess) {
+    $('#' + obj).html(mess);
+    setTimeout(function () {
+      $('#' + obj).html('');
+    }, 4000);
+  }
+  /**
+   * 下一步,注册页面
+   */
+  function nextStep() {
+    $('#login-form-id').hide();
+    $('#enroll-form-div-id').show();
+  }
+  /**
+   * 上一步，登录界面
+   */
+  function prevStep() {
+    $('#login-form-id').show();
+    $('#enroll-form-div-id').hide();
+  }
+  /**
+   * 注册
+   */
+  function enroll() {
+    var idCard = $.trim($('#enrollIdCard').val());
+    var userName = $.trim($('#enrollUserName').val());
+    var r = new RegExp('^[1-9]([0-9]{16}|[0-9]{13})[xX0-9]$');
+    if (idCard.length != 18 || !r.test(idCard)) {
+      setMessage('enroll-message-id', '请输入合法的身份证号');
+      $('#enrollIdCard').focus();
+      return;
+    }
+    if (userName == "") {
+      setMessage('enroll-message-id', '请输入您的姓名');
+      return;
+    }
+    if ($.trim($('#otherCompanyInput').val()) == "") {
+      setMessage('enroll-message-id', '请选择单位');
+      return;
+    }
+    $('#enroll-form').submit();
+  }
+
+  /**
+   *
+   * @param id
+   */
+  function show_box(id) {
+    jQuery('.widget-box.visible').removeClass('visible');
+    jQuery('#' + id).addClass('visible');
+  }
+
+  function validate(form) {
+    var idCardDom = $('#idCard');
+    var idCard = idCardDom.val();
+    var r = new RegExp('^[1-9]([0-9]{16}|[0-9]{13})[xX0-9]$');
+    if (idCard.length != 18 || !r.test(idCard)) {
+      $('#login-message-id').html('请输入合法的身份证号');
+      setTimeout(function () {
+        $('#login-message-id').html('');
+      }, 4000);
+      idCardDom.focus();
+      return false;
+    }
+
+    try {
+      window.localStorage.setItem('__idCard', idCard);
+    } catch (e) {
+    }
+  }
+
+  // 如果已经登录过，则显示上次登录的身份证号码
+  try {
+    var ID_CARD = window.localStorage.getItem('__idCard');
+    if (ID_CARD) {
+      $('#idCard').val(ID_CARD);
+    }
+  } catch (e) {
+  }
+
+  //下面代码实现全屏显示
+  function openForFullScreen(url) {
+    var Request = new Array();//保存参数
+    var s = location.search.substring(1);
+    if (s && s != "") {
+      var list = s.split("&");
+      for (var i = 0; i < list.length; i++) {
+        var pair = list[i].split("=");
+        if (pair[0] && pair[0] != "") {
+          Request[unescape(pair[0])] = unescape(pair[1]);
+        }
+      }
+    }
+    var fullscreen = Request["fullscreen"];
+    if (fullscreen != "yes") {
+      var file = url;
+      var a = window.open("about:blank", "", "fullscreen=yes")
+      self.opener = null
+      self.close()
+      a.location = file + "?fullscreen=yes";
+    }
+  }
+</script>
+</body>
+</html>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%--
+页面头部是否居中？ 默认为居左并且显示导航菜单
+页面内容区域的背景，默认为白色
+--%>
+<jsp:include page="../include/include_header.jsp">
+  <jsp:param name="headAlign" value="center"></jsp:param>
+  <jsp:param name="contentBackground" value="#d0f6e3"></jsp:param>
+</jsp:include>
+
+<style>
+  .my-card {
+    width: 40px;
+    height: 40px;
+  }
+</style>
+
+<div class="container">
+  <br/>
+
+  <form method="post" id="search-orm-id">
+    <div style="text-align: center;">
+      <span>请选择要闭卷考试的人</span>
+    </div>
+    <table class="searchTable">
+      <tr>
+        <td>身份证号：
+        </td>
+        <td>
+          <input type="text" name="idCard" size="20"/>
+        </td>
+        <td>
+          职级：
+        </td>
+        <td>
+          <select name="jobGrade">
+            <option value="">请选择</option>
+            <option value="区级">区级</option>
+            <option value="正处">正处</option>
+            <option value="副处">副处</option>
+            <option value="正科">正科</option>
+            <option value="副科及以下">副科及以下</option>
+          </select>
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          姓名：
+        </td>
+        <td>
+          <input type="text" name="userName" size="20">
+        </td>
+        <td></td>
+        <td style="padding-top: 0px;">
+          <input type="hidden" name="action" value="list"/>
+          <button type='submit' class="btn btn-sm btn-purple" tabIndex="15">
+            <i class="icon-search icon-on-left "></i>&nbsp;查询
+          </button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button class=" btn btn-sm btn-light" type="reset" tabIndex="15">
+            <i class="icon-on-left icon-refresh"></i>&nbsp;重置
+          </button>
+        </td>
+        <td></td>
+      </tr>
+    </table>
+  </form>
+  <br/>
+
+  <div id="user-enrollment-div-id">
+    <table id="user-enrollment-table-id" style="text-align: left;width: 100%"></table>
+    <div style="text-align: center;margin-top: 20px;">
+      <button class="my-button blue" onclick="nextStep();"><strong style="color: white;">下一步</strong></button>
+    </div>
+  </div>
+  <form id="list" action="CardCtrl.createCard.do" style="display: none;">
+    <div style="text-align: center;">
+      <span>下列为将要生成准考证的人员</span>
+    </div>
+    <table id="user-table-confirm-id"
+           class="table table-striped table-bordered table-hover dataTable no-footer my-non-first-td">
+      <thead>
+      <tr role="row">
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 97.4667px;">照片</th>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 206.467px;">身份证号</th>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 49.4667px;">职级</th>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 130.467px;">手机号</th>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 67.4667px;">姓名</th>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 43.4667px;">性别</th>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 114.467px;">出生日期</th>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 114.467px;">报名时间</th>
+      </tr>
+      </thead>
+      <tbody id="user-table-confirm-tbody"></tbody>
+    </table>
+    <div style="text-align: center;margin-top: 20px;">
+      <button type="button" class="my-button blue" onclick="prevStep();"><strong
+          style="color: white;">上一步</strong></button>
+      <button type="button" class="my-button blue" onclick="saveCard();"><strong style="color: white;">确定</strong>
+      </button>
+    </div>
+  </form>
+
+</div>
+<style>
+  .my-non-first-td tr td:first-child {
+    display: none;
+  }
+
+  .my-non-first-td tr td:last-child {
+    display: none;
+  }
+
+  /* 复写dataTable样式 */
+  .dataTables_info, .dataTables_paginate {
+    display: none;
+  }
+
+</style>
+<script type="text/javascript">
+  $(function () {
+    var res = '${requestScope.result}';
+    if (res == 'false') {
+      alert('生成准考证错误');
+    }
+  });
+  /**
+   * 下一步
+   */
+  function nextStep() {
+    var cardStartTime = '${requestScope.config.cardStartTimeL}';
+    var cardEndTime = '${requestScope.config.cardEndTimeL}';
+    var date = new Date();
+    var nowTime = date.getTime();
+    if (cardStartTime <= nowTime && cardEndTime >= nowTime) {
+      var s = $("#user-enrollment-table-id input:checked");
+      if (s.length < 1) {
+        alert('没有选择必考人员');
+        return;
+      }
+      $('#user-table-confirm-tbody').html('');
+      $.each(s, function (i, n) {
+        var _my = $(n).parent().parent().clone();
+        var ss = $(_my).children().first().children().first().attr('data-status');
+        if (ss == 4) {
+          _my.children().first().children().first().remove();
+        }
+        _my.appendTo('#user-table-confirm-tbody');
+      });
+      $('#user-enrollment-div-id').hide();
+      $('#search-orm-id').hide();
+      $('#list').show();
+    } else {
+      alert('现在不在打印准考证时间');
+    }
+  }
+
+  /**
+   * 上一步
+   */
+  function prevStep() {
+    $('#user-enrollment-div-id').show();
+    $('#search-orm-id').show();
+    $('#list').hide();
+  }
+
+  /**
+   * 保存
+   */
+  function saveCard() {
+    bootbox.confirm({
+      buttons: {
+        confirm: {
+          label: '确定',
+          style: 'background-color: #002a80;color: red;width:100px;'
+        },
+        cancel: {
+          label: '取消',
+          className: 'btn-default'
+        }
+      },
+      message: '<h3>请确认需要生成的准考证没有错误，一旦生成准考证，将不再被允许修改。</h3>',
+      callback: function (result) {
+        if (result) {
+          $('#list').submit();
+        } else {
+        }
+      },
+      title: "提示"
+    });
+  }
+  /**
+   * 加载列表
+   */
+  $(function () {
+    // 列定义
+    var columns = [
+      {
+        "sTitle": "",
+        "render": function (data, type, row) {
+          var status = row.status;
+          if (status == 4) {
+            return '<input class="my-card" name="my-card" type="checkbox" data-status="' + status + '" value="' + row.id + '" checked="checked" style="display:none;" data-user-id="' + row.id + '">'
+          } else {
+            return '<input class="my-card" name="my-card" type="checkbox" value="' + row.id + '" data-user-id="' + row.id + '">'
+          }
+        }
+      },
+
+      {
+        "sTitle": "照片" +
+        "",
+        "render": function (data, type, row) {
+          return '<img src="ManageCtrl.writeUserPhoto.do?id=' + row.id + '" style="height:60px;"/>'
+        }
+      },
+      {
+        "sTitle": "身份证号",
+        "mData": 'idCard'
+      },
+      {
+        "sTitle": "职级",
+        "mData": 'jobGrade'
+      },
+      {
+        "sTitle": "手机号",
+        "mData": 'phone'
+      },
+      {
+        "sTitle": "姓名",
+        "mData": 'userName'
+      },
+      {
+        "sTitle": "性别",
+        "render": function (data, type, row) {
+          var text = '';
+          switch (row.sex) {
+            case 1:
+              text = '男';
+              break;
+            case 2:
+              text = '女';
+              break;
+            default :
+              text = '';
+              break
+          }
+          return text;
+        }
+      },
+      {
+        "sTitle": "出生日期",
+        "mData": 'birthday'
+      },
+      {
+        "sTitle": "报名时间",
+        "render": function (data, type, row) {
+          return row.enrollmentTime;
+        }
+      },
+      {
+        "sTitle": "账号状态",
+        "render": function (data, type, row) {
+          var text = '';
+          switch (row.status) {
+            case 1:
+              text = '激活';
+              break;
+            case 2:
+              text = '锁定';
+              break;
+            case 3:
+              text = '已报名';
+              break;
+            case 4:
+              text = '闭卷考试';
+              break;
+            default :
+              text = '';
+              break;
+          }
+          return text;
+        }
+      }
+    ];
+
+    // 核心在这里，会自动拥有，表单回车查询特性。
+    // datatable的js和样式不再需要引入，此方法会自动判断和引入。
+    // 仅仅需要指定url、列的显示样式、表格id，form id即可。
+    new DefaultDataTable(Routers.pufa.card.enrollmentList, columns, '#user-enrollment-table-id', '#search-orm-id', false);
+
+  });
+</script>
+
+<%@include file="../include/include_footer.jsp" %>
+
+
+

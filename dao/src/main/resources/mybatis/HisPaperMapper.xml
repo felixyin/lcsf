@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.HisPaperMapper">
+  <resultMap id="BaseResultMap" type="com.hzc.model.HisPaper">
+    <id column="id" property="id" jdbcType="INTEGER"/>
+    <result column="score" property="score" jdbcType="REAL"/>
+    <result column="answer_start_time" property="answerStartTime" jdbcType="TIMESTAMP"/>
+    <result column="answer_end_time" property="answerEndTime" jdbcType="TIMESTAMP"/>
+    <result column="type" property="type" jdbcType="INTEGER"/>
+    <result column="close_exam" property="closeExam" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="deleted" property="deleted" jdbcType="INTEGER"/>
+    <result column="user_id" property="userId" jdbcType="INTEGER"/>
+    <result column="card_id" property="cardId" jdbcType="INTEGER"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, score, answer_start_time, answer_end_time, type, close_exam, update_time, create_time, deleted,
+    user_id, card_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List"/>
+    from his_paper
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from his_paper
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hzc.model.HisPaper" useGeneratedKeys="true" keyProperty="id">
+    insert into his_paper (id, score, answer_start_time, 
+      answer_end_time, type, close_exam, update_time,
+      create_time, deleted, user_id, card_id)
+    values (#{id,jdbcType=INTEGER}, #{score,jdbcType=REAL}, #{answerStartTime,jdbcType=TIMESTAMP}, 
+      #{answerEndTime,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, #{closeExam,jdbcType=INTEGER},
+      #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=INTEGER},
+      #{userId,jdbcType=INTEGER},  #{cardId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hzc.model.HisPaper" useGeneratedKeys="true" keyProperty="id">
+    insert into his_paper
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="answerStartTime != null">
+        answer_start_time,
+      </if>
+      <if test="answerEndTime != null">
+        answer_end_time,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="closeExam != null">
+        close_exam,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="cardId != null">
+        card_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=REAL},
+      </if>
+      <if test="answerStartTime != null">
+        #{answerStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="answerEndTime != null">
+        #{answerEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="closeExam != null">
+        #{closeExam,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="cardId != null">
+        #{cardId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.HisPaper">
+    update his_paper
+    <set>
+      <if test="score != null">
+        score = #{score,jdbcType=REAL},
+      </if>
+      <if test="answerStartTime != null">
+        answer_start_time = #{answerStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="answerEndTime != null">
+        answer_end_time = #{answerEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="closeExam != null">
+        close_exam = #{closeExam,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="cardId != null">
+        card_id = #{cardId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hzc.model.HisPaper">
+    update his_paper
+    set score = #{score,jdbcType=REAL},
+      answer_start_time = #{answerStartTime,jdbcType=TIMESTAMP},
+      answer_end_time = #{answerEndTime,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
+      close_exam = #{closeExam,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      card_id = #{cardId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByUserId" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM his_paper
+    WHERE
+    user_id = #{userId}
+  </select>
+  <select id="selectCompanyReportList" resultType="com.hzc.vo.CompanyReportVO">
+    SELECT
+    com.id,
+    com. NAME,
+    IFNULL(
+    eeee.allscoreB / eeee.allpeopleB,
+    0
+    ) pingjunfenB,
+    IFNULL(
+    ffff.allscoreK / ffff.allpeopleK,
+    0
+    ) pingjunfenK,
+    IFNULL(
+    gggg.xueshimanB / cccc.baomingrenB,
+    0
+    ) xueshilvB,
+    IFNULL(
+    hhhh.xueshimanK / dddd.baomingrenK,
+    0
+    ) xueshilvK,
+    IFNULL(
+    aaaa.cankaorenB / cccc.baomingrenB,
+    0
+    ) cankaolvB,
+    IFNULL(
+    bbbb.cankaorenK / dddd.baomingrenK,
+    0
+    ) cankaolvK,
+    IFNULL(
+    jjjj.jigerenB / cccc.baomingrenB,
+    0
+    ) jigelvB,
+    IFNULL(
+    iiii.jigerenK / dddd.baomingrenK,
+    0
+    ) jigelvK,
+    aaaa.cankaorenB,
+    bbbb.cankaorenK,
+    cccc.baomingrenB,
+    dddd.baomingrenK,
+    eeee.allscoreB,
+    eeee.allpeopleB,
+    ffff.allscoreK,
+    ffff.allpeopleK,
+    gggg.xueshimanB,
+    hhhh.xueshimanK,
+    iiii.jigerenK,
+    jjjj.jigerenB
+    FROM
+    sys_company com
+    LEFT JOIN
+    (SELECT
+    COUNT(*) cankaorenB, aa.cid, aa.NAME
+    FROM
+    (SELECT
+    p.score,
+    p.`type`,
+    p.user_id,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    his_paper p
+    RIGHT JOIN sys_user u ON p.user_id = u.id
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    p.score >= 0 AND p.type = 2
+    AND p.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1
+    AND u.deleted = 1) aa
+    GROUP BY aa.cid) aaaa ON aaaa.cid = com.id
+    LEFT JOIN
+    (SELECT
+    COUNT(*) cankaorenK, aa.cid, aa.NAME
+    FROM
+    (SELECT
+    p.score,
+    p.`type`,
+    p.user_id,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    his_paper p
+    RIGHT JOIN sys_user u ON p.user_id = u.id
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    p.score >= 0 AND p.`type` = 1
+    AND p.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1
+    AND u.deleted = 1) aa
+    GROUP BY aa.cid) bbbb ON aaaa.cid = bbbb.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) baomingrenB, aa.cid, aa.`NAME`
+    FROM
+    (SELECT
+    u.id_card,
+    u.user_name,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    sys_user u
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    u.`STATUS` = 4 AND u.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1) aa
+    GROUP BY aa.cid) cccc ON aaaa.cid = cccc.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) baomingrenK, aa.cid, aa.`NAME`
+    FROM
+    (SELECT
+    u.id_card,
+    u.user_name,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    sys_user u
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    u.`STATUS` = 3 AND u.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1) aa
+    GROUP BY aa.cid) dddd ON aaaa.cid = dddd.cid
+    LEFT JOIN
+    (SELECT
+    SUM(aa.score) allscoreB,
+    COUNT(*) allpeopleB,
+    aa.cid,
+    aa.`NAME`
+    FROM
+    (SELECT
+    u.id,
+    u.company_id,
+    u.user_name,
+    c.id cid,
+    c.pid,
+    c.`NAME`,
+    p.score,
+    p.`type`
+    FROM
+    sys_user u
+    JOIN his_paper p ON p.user_id = u.id
+    JOIN sys_company c ON c.id = u.company_id
+    WHERE
+    p.deleted = 1 AND u.deleted = 1
+    AND c.deleted = 1
+    AND p.score >= 0
+    AND p.`type` = 2
+    AND c.pid = #{pid}) aa
+    GROUP BY aa.cid) eeee ON aaaa.cid = eeee.cid
+    LEFT JOIN
+    (SELECT
+    SUM(aa.score) allscoreK,
+    COUNT(*) allpeopleK,
+    aa.cid,
+    aa.`NAME`
+    FROM
+    (SELECT
+    u.id,
+    u.company_id,
+    u.user_name,
+    c.id cid,
+    c.pid,
+    c.`NAME`,
+    p.score,
+    p.`type`
+    FROM
+    sys_user u
+    JOIN his_paper p ON p.user_id = u.id
+    JOIN sys_company c ON c.id = u.company_id
+    WHERE
+    p.deleted = 1 AND u.deleted = 1
+    AND c.deleted = 1
+    AND p.score >= 0
+    AND p.`type` = 1
+    AND c.pid = #{pid}) aa
+    GROUP BY aa.cid) ffff ON aaaa.cid = ffff.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) xueshimanB, gg.`name`, gg.cid
+    FROM
+    (SELECT
+    u.id,
+    u.user_name,
+    u.company_id,
+    c.id cid,
+    c.`NAME`,
+    c.pid,
+    b.zz + b.xx + b.cc + b.vv xueshi
+    FROM
+    sys_user u
+    JOIN sys_company c ON c.id = u.company_id
+    JOIN (SELECT
+    a.user_id,
+    SUM(a.sty_bm_times) zz,
+    SUM(a.sty_clt_times) xx,
+    SUM(a.sty_times) cc,
+    SUM(a.effect_answer_times) vv,
+    a.deleted
+    FROM
+    his_answer a
+    GROUP BY a.user_id) b ON b.user_id = u.id
+    WHERE
+    (b.zz + b.xx + b.cc + b.vv) >= 2400
+    AND b.deleted = 1
+    AND c.deleted = 1
+    AND u.deleted = 1
+    AND u.`status` = 4
+    AND c.pid = #{pid}) gg
+    GROUP BY gg.cid) gggg ON aaaa.cid = gggg.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) xueshimanK, gg.`name`, gg.cid
+    FROM
+    (SELECT
+    u.id,
+    u.user_name,
+    u.company_id,
+    c.id cid,
+    c.`NAME`,
+    c.pid,
+    b.zz + b.xx + b.cc + b.vv xueshi
+    FROM
+    sys_user u
+    JOIN sys_company c ON c.id = u.company_id
+    JOIN (SELECT
+    a.user_id,
+    SUM(a.sty_bm_times) zz,
+    SUM(a.sty_clt_times) xx,
+    SUM(a.sty_times) cc,
+    SUM(a.effect_answer_times) vv,
+    a.deleted
+    FROM
+    his_answer a
+    GROUP BY a.user_id) b ON b.user_id = u.id
+    WHERE
+    (b.zz + b.xx + b.cc + b.vv) >= 2400
+    AND b.deleted = 1
+    AND c.deleted = 1
+    AND u.deleted = 1
+    AND u.`status` = 3
+    AND c.pid = #{pid}) gg
+    GROUP BY gg.cid) hhhh ON aaaa.cid = hhhh.cid
+    LEFT JOIN (
+    SELECT
+    COUNT(*) jigerenK,
+    aa.cid,
+    aa. NAME
+    FROM
+    (
+    SELECT
+    p.score,
+    p.type,
+    p.user_id,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    his_paper p
+    RIGHT JOIN sys_user u ON p.user_id = u.id
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    p.score >= 80
+    AND p.type = 1
+    AND p.deleted = 1
+    AND c.pid = 3
+    AND c.deleted = 1
+    AND u.deleted = 1
+    ) aa
+    GROUP BY
+    aa.cid
+    ) iiii ON iiii.cid = aaaa.cid
+    LEFT JOIN (
+    SELECT
+    COUNT(*) jigerenB,
+    aa.cid,
+    aa. NAME
+    FROM
+    (
+    SELECT
+    p.score,
+    p.type,
+    p.user_id,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    his_paper p
+    RIGHT JOIN sys_user u ON p.user_id = u.id
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    p.score >= 80
+    AND p.type = 2
+    AND p.deleted = 1
+    AND c.pid = 3
+    AND c.deleted = 1
+    AND u.deleted = 1
+    ) aa
+    GROUP BY
+    aa.cid
+    ) jjjj ON jjjj.cid = aaaa.cid
+    WHERE
+    com.deleted = 1 AND com.pid = #{pid}
+    order by ${vo.sort}  ${vo.order}
+    limit #{vo.startIndex},#{vo.pageSize}
+  </select>
+  <select id="selectCompanyReportListCount" resultType="java.lang.Integer">
+    SELECT count(*) FROM (
+    SELECT
+    com.id,
+    com.`name`,
+    aaaa.cankaorenB,
+    bbbb.cankaorenK,
+    cccc.baomingrenB,
+    dddd.baomingrenK,
+    eeee.allscoreB,
+    eeee.allpeopleB,
+    ffff.allscoreK,
+    ffff.allpeopleK,
+    gggg.xueshimanB,
+    hhhh.xueshimanK
+    FROM
+    sys_company com
+    LEFT JOIN
+    (SELECT
+    COUNT(*) cankaorenB, aa.cid, aa.NAME
+    FROM
+    (SELECT
+    p.score,
+    p.`type`,
+    p.user_id,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    his_paper p
+    RIGHT JOIN sys_user u ON p.user_id = u.id
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    p.score >= 0 AND p.type = 2
+    AND p.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1
+    AND u.deleted = 1) aa
+    GROUP BY aa.cid) aaaa ON aaaa.cid = com.id
+    LEFT JOIN
+    (SELECT
+    COUNT(*) cankaorenK, aa.cid, aa.NAME
+    FROM
+    (SELECT
+    p.score,
+    p.`type`,
+    p.user_id,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    his_paper p
+    RIGHT JOIN sys_user u ON p.user_id = u.id
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    p.score >= 0 AND p.`type` = 1
+    AND p.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1
+    AND u.deleted = 1) aa
+    GROUP BY aa.cid) bbbb ON aaaa.cid = bbbb.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) baomingrenB, aa.cid, aa.`NAME`
+    FROM
+    (SELECT
+    u.id_card,
+    u.user_name,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    sys_user u
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    u.`STATUS` = 4 AND u.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1) aa
+    GROUP BY aa.cid) cccc ON aaaa.cid = cccc.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) baomingrenK, aa.cid, aa.`NAME`
+    FROM
+    (SELECT
+    u.id_card,
+    u.user_name,
+    u.id,
+    u.company_id,
+    c.pid,
+    c.id cid,
+    c.`name`
+    FROM
+    sys_user u
+    JOIN sys_company c ON u.company_id = c.id
+    WHERE
+    u.`STATUS` = 3 AND u.deleted = 1
+    AND c.pid = #{pid}
+    AND c.deleted = 1) aa
+    GROUP BY aa.cid) dddd ON aaaa.cid = dddd.cid
+    LEFT JOIN
+    (SELECT
+    SUM(aa.score) allscoreB,
+    COUNT(*) allpeopleB,
+    aa.cid,
+    aa.`NAME`
+    FROM
+    (SELECT
+    u.id,
+    u.company_id,
+    u.user_name,
+    c.id cid,
+    c.pid,
+    c.`NAME`,
+    p.score,
+    p.`type`
+    FROM
+    sys_user u
+    JOIN his_paper p ON p.user_id = u.id
+    JOIN sys_company c ON c.id = u.company_id
+    WHERE
+    p.deleted = 1 AND u.deleted = 1
+    AND c.deleted = 1
+    AND p.score >= 0
+    AND p.`type` = 2
+    AND c.pid = #{pid}) aa
+    GROUP BY aa.cid) eeee ON aaaa.cid = eeee.cid
+    LEFT JOIN
+    (SELECT
+    SUM(aa.score) allscoreK,
+    COUNT(*) allpeopleK,
+    aa.cid,
+    aa.`NAME`
+    FROM
+    (SELECT
+    u.id,
+    u.company_id,
+    u.user_name,
+    c.id cid,
+    c.pid,
+    c.`NAME`,
+    p.score,
+    p.`type`
+    FROM
+    sys_user u
+    JOIN his_paper p ON p.user_id = u.id
+    JOIN sys_company c ON c.id = u.company_id
+    WHERE
+    p.deleted = 1 AND u.deleted = 1
+    AND c.deleted = 1
+    AND p.score >= 0
+    AND p.`type` = 1
+    AND c.pid = #{pid}) aa
+    GROUP BY aa.cid) ffff ON aaaa.cid = ffff.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) xueshimanB, gg.`name`, gg.cid
+    FROM
+    (SELECT
+    u.id,
+    u.user_name,
+    u.company_id,
+    c.id cid,
+    c.`NAME`,
+    c.pid,
+    b.zz + b.xx + b.cc + b.vv xueshi
+    FROM
+    sys_user u
+    JOIN sys_company c ON c.id = u.company_id
+    JOIN (SELECT
+    a.user_id,
+    SUM(a.sty_bm_times) zz,
+    SUM(a.sty_clt_times) xx,
+    SUM(a.sty_times) cc,
+    SUM(a.effect_answer_times) vv,
+    a.deleted
+    FROM
+    his_answer a
+    GROUP BY a.user_id) b ON b.user_id = u.id
+    WHERE
+    (b.zz + b.xx + b.cc + b.vv) >= 2400
+    AND b.deleted = 1
+    AND c.deleted = 1
+    AND u.deleted = 1
+    AND u.`status` = 4
+    AND c.pid = #{pid}) gg
+    GROUP BY gg.cid) gggg ON aaaa.cid = gggg.cid
+    LEFT JOIN
+    (SELECT
+    COUNT(*) xueshimanK, gg.`name`, gg.cid
+    FROM
+    (SELECT
+    u.id,
+    u.user_name,
+    u.company_id,
+    c.id cid,
+    c.`NAME`,
+    c.pid,
+    b.zz + b.xx + b.cc + b.vv xueshi
+    FROM
+    sys_user u
+    JOIN sys_company c ON c.id = u.company_id
+    JOIN (SELECT
+    a.user_id,
+    SUM(a.sty_bm_times) zz,
+    SUM(a.sty_clt_times) xx,
+    SUM(a.sty_times) cc,
+    SUM(a.effect_answer_times) vv,
+    a.deleted
+    FROM
+    his_answer a
+    GROUP BY a.user_id) b ON b.user_id = u.id
+    WHERE
+    (b.zz + b.xx + b.cc + b.vv) >= 2400
+    AND b.deleted = 1
+    AND c.deleted = 1
+    AND u.deleted = 1
+    AND u.`status` = 3
+    AND c.pid = #{pid}) gg
+    GROUP BY gg.cid) hhhh ON aaaa.cid = hhhh.cid
+    WHERE
+    com.deleted = 1 AND com.pid = #{pid}
+    ) uuuuu
+  </select>
+  <select id="selectPeopleReportList" resultType="com.hzc.vo.PeopleReportVO">
+    SELECT
+    u.id,
+    u.user_name userName,
+    u.id_card idCard,
+    u.company_id companyId,
+
+    IF (
+    u.`status` = 3,
+    "开卷",
+    "闭卷"
+    ) type,
+    IFNULL(p.score,0) score,
+    p.answer_end_time answerEndTime,
+    p.answer_start_time answerStartTime,
+    IFNULL(b.zz + b.xx + b.cc + b.vv,0) xueshi
+    FROM
+    sys_user u
+    LEFT OUTER JOIN his_paper p ON p.user_id = u.id
+    LEFT JOIN (
+    SELECT
+    a.user_id,
+    sum(a.sty_bm_times) zz,
+    SUM(a.sty_clt_times) xx,
+    sum(a.sty_times) cc,
+    sum(a.effect_answer_times) vv,
+    a.deleted
+    FROM
+    his_answer a
+    GROUP BY
+    a.user_id
+    ) b ON b.user_id = u.id
+    WHERE
+    u.deleted = 1
+    AND u.`status` > 2
+    AND u.company_id = #{companyId}
+    order by ${vo.sort}  ${vo.order}
+    limit #{vo.startIndex},#{vo.pageSize}
+  </select>
+  <select id="selectPeopleReportListCount" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM (SELECT
+    u.id,
+    u.user_name userName,
+    u.id_card idCard,
+    u.company_id companyId,
+
+    IF (
+    u.`status` = 3,
+    "开卷",
+    "闭卷"
+    ) type,
+    IFNULL(p.score,0) score,
+    p.answer_end_time answerEndTime,
+    p.answer_start_time answerStartTime,
+    IFNULL(b.zz + b.xx + b.cc + b.vv,0) xueshi
+    FROM
+    sys_user u
+    LEFT OUTER JOIN his_paper p ON p.user_id = u.id
+    LEFT JOIN (
+    SELECT
+    a.user_id,
+    sum(a.sty_bm_times) zz,
+    SUM(a.sty_clt_times) xx,
+    sum(a.sty_times) cc,
+    sum(a.effect_answer_times) vv,
+    a.deleted
+    FROM
+    his_answer a
+    GROUP BY
+    a.user_id
+    ) b ON b.user_id = u.id
+    WHERE
+    u.deleted = 1
+    AND u.`status` > 2
+    AND u.company_id = #{companyId}) bbbbb
+  </select>
+</mapper>

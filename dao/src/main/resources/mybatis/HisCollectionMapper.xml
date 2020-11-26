@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.HisCollectionMapper">
+    <resultMap id="BaseResultMap" type="com.hzc.model.HisCollection">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="category_code" property="categoryCode" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="question_id" property="questionId" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="answer" property="answer" jdbcType="VARCHAR"/>
+        <result column="cost_time" property="costTime" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, category_code, type, question_id, update_time, answer, cost_time
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from his_collection
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from his_collection
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.hzc.model.HisCollection">
+    insert into his_collection (id, user_id, category_code, 
+      type, question_id, update_time, 
+      answer, cost_time)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{categoryCode,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER}, #{questionId,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{answer,jdbcType=VARCHAR}, #{costTime,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.hzc.model.HisCollection">
+        insert into his_collection
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="categoryCode != null">
+                category_code,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="questionId != null">
+                question_id,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="answer != null">
+                answer,
+            </if>
+            <if test="costTime != null">
+                cost_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="categoryCode != null">
+                #{categoryCode,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="questionId != null">
+                #{questionId,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="answer != null">
+                #{answer,jdbcType=VARCHAR},
+            </if>
+            <if test="costTime != null">
+                #{costTime,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.HisCollection">
+        update his_collection
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="categoryCode != null">
+                category_code = #{categoryCode,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="questionId != null">
+                question_id = #{questionId,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="answer != null">
+                answer = #{answer,jdbcType=VARCHAR},
+            </if>
+            <if test="costTime != null">
+                cost_time = #{costTime,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hzc.model.HisCollection">
+    update his_collection
+    set user_id = #{userId,jdbcType=INTEGER},
+      category_code = #{categoryCode,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      question_id = #{questionId,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      answer = #{answer,jdbcType=VARCHAR},
+      cost_time = #{costTime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <delete id="deleteByUserIdAndQuestionId">
+        delete from his_collection
+    where user_id = #{userId,jdbcType=INTEGER}
+    and type = #{type,jdbcType=INTEGER}
+    and question_id = #{questionId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectListGtCurrDate" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM his_collection l
+        WHERE
+        l.user_id = #{userId,jdbcType=INTEGER}
+        <if test="updateTime != null">
+            AND l.update_time > #{updateTime,jdbcType=TIMESTAMP}
+        </if>
+    </select>
+    <select id="selectAllCollectQid" resultMap="BaseResultMap">
+        SELECT question_id
+        FROM his_collection l
+        WHERE
+        l.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+    <select id="selectAllByUserIdAndType" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM his_collection l
+        WHERE
+        l.user_id = #{userId,jdbcType=INTEGER}
+        AND substr(l.category_code,1,4) = #{categoryCode,jdbcType=VARCHAR}
+        AND type = #{type,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByQIdUIdAndType" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM his_collection
+        WHERE question_id = #{questionId}
+        and user_id = #{userId}
+        and type = #{type}
+    </select>
+    <select id="selectCollectionsByUserIdForCard" resultType="com.hzc.vo.AnswerCardVO">
+        select
+            lq.id questionId,
+            lc.user_id userId,
+            lq.type,
+            laa.collect_times collectTimes,
+            laa.answer_times answerTimes,
+            lq.seq,
+            lq.category_code categoryCode
+        from
+            his_collection lc
+                left join
+            lp_question lq ON lq.id = lc.question_id
+                    left join
+            (select
+                la.question_id, la.collect_times, la.answer_times
+            from
+                his_answer la
+            where
+                la.user_id = #{userId} and la.deleted = 1) laa ON laa.question_id = lq.id
+        where
+            lc.type = #{type}
+            and lc.user_id = #{userId}
+        order by lq.id
+    </select>
+    <select id="selectErrorCollections" resultType="com.hzc.vo.AnswerCardVO">
+        select
+            *
+        from
+            (select
+                    lq.id questionId,
+                    lc.user_id userId,
+                    lq.type,
+                    laa.collect_times collectTimes,
+                    laa.answer_times answerTimes,
+                    lq.seq,
+                    lq.category_code categoryCode,
+                    lq.name,
+                    lq.source
+            from
+                his_collection lc
+            left join lp_question lq ON lq.id = lc.question_id
+            left join (select
+                la.question_id, la.collect_times, la.answer_times
+            from
+                his_answer la
+            where
+                la.user_id = #{userId} and la.deleted = 1) laa ON laa.question_id = lq.id
+            where
+                lc.type = 2 and lc.user_id = #{userId}
+            order by lq.id) aa
+                left join
+            (select
+                lq.id collectionType
+            from
+                his_collection lc
+            left join lp_question lq ON lq.id = lc.question_id
+            left join (select
+                la.question_id, la.collect_times, la.answer_times
+            from
+                his_answer la
+            where
+                la.user_id = #{userId} and la.deleted = 1) laa ON laa.question_id = lq.id
+            where
+                lc.type = 1 and lc.user_id = #{userId}
+            order by lq.id) bb ON aa.questionId = bb.collectionType
+    </select>
+    <delete id="deleteByUserIdAndType">
+        DELETE FROM his_collection
+        WHERE user_id = #{userId} and type = #{type}
+        <if test="categoryCode != null">
+          and category_code = #{categoryCode,jdbcType=VARCHAR}
+        </if>
+    </delete>
+    <select id="selectCollectionsByUserIdForPrint" resultType="com.hzc.vo.AnswerCardVO">
+        select
+            lq.id questionId,
+            lc.user_id userId,
+            lq.type,
+            laa.collect_times collectTimes,
+            laa.answer_times answerTimes,
+            lq.seq,
+            lq.name,
+            lq.category_code categoryCode
+        from
+            his_collection lc
+                left join
+            lp_question lq ON lq.id = lc.question_id
+                    left join
+            (select
+                la.question_id, la.collect_times, la.answer_times
+            from
+                his_answer la
+            where
+                la.user_id = #{userId} and la.deleted = 1) laa ON laa.question_id = lq.id
+        where
+            lc.type = #{type}
+            and lc.user_id = #{userId}
+        order by lq.id
+    </select>
+
+</mapper>

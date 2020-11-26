@@ -1,0 +1,35 @@
+
+.searchTable {
+    /*padding-top: 15px;*/
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+
+.searchTable tr td:nth-child(odd) {
+    padding-left: 20px;
+    width: 100px;
+    height: 33px;
+}
+
+.searchTable tr td:nth-child(even) {
+    width: 250px;
+    height: 33px;
+}
+
+.searchTable tr td:nth-last-child(1) {
+    width: auto;
+    float: right;
+}
+
+.searchTable input {
+    width: 180px;
+    height: 30px;
+    font-size: 13px;
+}
+
+.searchTable select {
+    width: 180px;
+    height: 30px;
+    font-size: 13px;
+}

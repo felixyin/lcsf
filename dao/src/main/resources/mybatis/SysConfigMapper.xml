@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.SysConfigMapper" >
+    <resultMap id="BaseResultMap" type="com.hzc.model.SysConfig" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="exam_start_time" property="examStartTime" jdbcType="TIMESTAMP" />
+        <result column="exam_end_time" property="examEndTime" jdbcType="TIMESTAMP" />
+        <result column="enrollment_start_time" property="enrollmentStartTime" jdbcType="TIMESTAMP" />
+        <result column="enrollment_end_time" property="enrollmentEndTime" jdbcType="TIMESTAMP" />
+        <result column="card_start_time" property="cardStartTime" jdbcType="TIMESTAMP" />
+        <result column="card_end_time" property="cardEndTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, exam_start_time, exam_end_time, enrollment_start_time, enrollment_end_time, card_start_time,
+        card_end_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from sys_config
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from sys_config
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.hzc.model.SysConfig" >
+        insert into sys_config (id, exam_start_time, exam_end_time,
+        enrollment_start_time, enrollment_end_time,
+        card_start_time, card_end_time, update_time
+        )
+        values (#{id,jdbcType=INTEGER}, #{examStartTime,jdbcType=TIMESTAMP}, #{examEndTime,jdbcType=TIMESTAMP},
+        #{enrollmentStartTime,jdbcType=TIMESTAMP}, #{enrollmentEndTime,jdbcType=TIMESTAMP},
+        #{cardStartTime,jdbcType=TIMESTAMP}, #{cardEndTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.hzc.model.SysConfig" >
+        insert into sys_config
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="examStartTime != null" >
+                exam_start_time,
+            </if>
+            <if test="examEndTime != null" >
+                exam_end_time,
+            </if>
+            <if test="enrollmentStartTime != null" >
+                enrollment_start_time,
+            </if>
+            <if test="enrollmentEndTime != null" >
+                enrollment_end_time,
+            </if>
+            <if test="cardStartTime != null" >
+                card_start_time,
+            </if>
+            <if test="cardEndTime != null" >
+                card_end_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="examStartTime != null" >
+                #{examStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="examEndTime != null" >
+                #{examEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enrollmentStartTime != null" >
+                #{enrollmentStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enrollmentEndTime != null" >
+                #{enrollmentEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cardStartTime != null" >
+                #{cardStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cardEndTime != null" >
+                #{cardEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.SysConfig" >
+        update sys_config
+        <set >
+            <if test="examStartTime != null" >
+                exam_start_time = #{examStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="examEndTime != null" >
+                exam_end_time = #{examEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enrollmentStartTime != null" >
+                enrollment_start_time = #{enrollmentStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="enrollmentEndTime != null" >
+                enrollment_end_time = #{enrollmentEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cardStartTime != null" >
+                card_start_time = #{cardStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cardEndTime != null" >
+                card_end_time = #{cardEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hzc.model.SysConfig" >
+        update sys_config
+        set exam_start_time = #{examStartTime,jdbcType=TIMESTAMP},
+        exam_end_time = #{examEndTime,jdbcType=TIMESTAMP},
+        enrollment_start_time = #{enrollmentStartTime,jdbcType=TIMESTAMP},
+        enrollment_end_time = #{enrollmentEndTime,jdbcType=TIMESTAMP},
+        card_start_time = #{cardStartTime,jdbcType=TIMESTAMP},
+        card_end_time = #{cardEndTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="select" resultMap="BaseResultMap">
+        SELECT
+        id, exam_start_time, exam_end_time,
+        enrollment_start_time, enrollment_end_time,
+        card_start_time, card_end_time, update_time
+        FROM
+        sys_config
+        limit 0,1
+    </select>
+    <select id="selectConfigList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        sys_config
+    </select>
+</mapper>

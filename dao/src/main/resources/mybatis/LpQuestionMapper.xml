@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzc.dao.LpQuestionMapper">
+  <resultMap id="BaseResultMap" type="com.hzc.model.LpQuestion">
+    <id column="id" property="id" jdbcType="INTEGER"/>
+    <result column="seq" property="seq" jdbcType="INTEGER"/>
+    <result column="category_code" property="categoryCode" jdbcType="VARCHAR"/>
+    <result column="material_id" property="materialId" jdbcType="INTEGER"/>
+    <result column="type" property="type" jdbcType="VARCHAR"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="answer_times" property="answerTimes" jdbcType="INTEGER"/>
+    <result column="collect_times" property="collectTimes" jdbcType="INTEGER"/>
+  </resultMap>
+    <resultMap id="BaseResultMapVO" type="com.hzc.vo.LpQuestionVO" extends="BaseResultMap">
+        <result column="opione" property="opione" jdbcType="VARCHAR"/>
+    </resultMap>
+  <sql id="Base_Column_List">
+    id, seq, category_code, material_id, type, name, 
+    answer_times, collect_times
+  </sql>
+  <sql id="Base_Column_List_As">
+        id questionId, seq, category_code category, `type`, `name`,  answer_times answerTimes, collect_times collectTimes
+    </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List"/>
+    from lp_question
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from lp_question
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hzc.model.LpQuestion">
+    insert into lp_question (id, seq, category_code, 
+      material_id, type, name, 
+        parser_video_id,
+       answer_times, collect_times
+      )
+    values (#{id,jdbcType=INTEGER}, #{seq,jdbcType=INTEGER}, #{categoryCode,jdbcType=VARCHAR}, 
+      #{materialId,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{answerTimes,jdbcType=INTEGER}, #{collectTimes,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hzc.model.LpQuestion">
+    insert into lp_question
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="seq != null">
+        seq,
+      </if>
+      <if test="categoryCode != null">
+        category_code,
+      </if>
+      <if test="materialId != null">
+        material_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="answerTimes != null">
+        answer_times,
+      </if>
+      <if test="collectTimes != null">
+        collect_times,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="seq != null">
+        #{seq,jdbcType=INTEGER},
+      </if>
+      <if test="categoryCode != null">
+        #{categoryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="materialId != null">
+        #{materialId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="answerTimes != null">
+        #{answerTimes,jdbcType=INTEGER},
+      </if>
+      <if test="collectTimes != null">
+        #{collectTimes,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hzc.model.LpQuestion">
+    update lp_question
+    <set>
+      <if test="seq != null">
+        seq = #{seq,jdbcType=INTEGER},
+      </if>
+      <if test="categoryCode != null">
+        category_code = #{categoryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="materialId != null">
+        material_id = #{materialId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="answerTimes != null">
+        answer_times = #{answerTimes,jdbcType=INTEGER},
+      </if>
+      <if test="collectTimes != null">
+        collect_times = #{collectTimes,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hzc.model.LpQuestion">
+    update lp_question
+    set seq = #{seq,jdbcType=INTEGER},
+      category_code = #{categoryCode,jdbcType=VARCHAR},
+      material_id = #{materialId,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      answer_times = #{answerTimes,jdbcType=INTEGER},
+      collect_times = #{collectTimes,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectForAnswerCardList" resultType="com.hzc.vo.AnswerCardVO">
+        select
+            lc.ctype collectionType,
+            lq.id questionId,
+            laa.collect_times collectTimes,
+            laa.answer_times answerTimes,
+            laa.user_id userId,
+            lq.type,
+            laa.update_time updateTime,
+            lq.seq seq,
+            lq.category_code categoryCode
+        from
+            lp_question lq
+                left join
+            (select
+                la . *
+            from
+                his_answer la
+            where
+                la.user_id = #{userId} and la.deleted = 1) laa ON lq.id = laa.question_id
+                left join
+            (select
+                lpc.type ctype, lpc.question_id
+            from
+                his_collection lpc
+            where
+                lpc.type = 1 and lpc.user_id = #{userId}) lc ON lc.question_id = lq.id
+    </select>
+  <select id="selectCardListIntelligent" resultType="com.hzc.vo.AnswerCardVO">
+        SELECT
+          lc.ctype collectionType,
+          lq.id questionId,
+          laa.collect_times collectTimes,
+          laa.answer_times answerTimes,
+          laa.user_id userId,
+          lq.type,
+          laa.update_time updateTime,
+          lq.seq seq,
+          lq.category_code categoryCode,
+        FROM
+          lp_question lq
+        LEFT JOIN (
+          SELECT
+            la.*
+          FROM
+            his_answer la
+          WHERE
+            la.user_id = #{userId}
+          AND la.deleted = 1
+        ) laa ON lq.id = laa.question_id
+        LEFT JOIN (
+          SELECT
+            lpc.type ctype,
+            lpc.question_id
+          FROM
+            his_collection lpc
+          WHERE
+            lpc.type = 1
+          AND lpc.user_id = #{userId}
+        ) lc ON lc.question_id = lq.id
+        INNER JOIN gen_exam_repo ger ON lq.id = ger.question_id
+  </select>
+  <select id="selectByPrimaryKeyForUser" resultType="com.hzc.vo.QuestionVO">
+        select
+            lq.id questionId,
+            laa.collect_times collectTimes,
+            laa.answer_times answerTimes,
+            laa.user_id userId,
+            lq.type,
+            laa.update_time updateTime,
+            lq.seq seq,
+            lq.category_code categoryCode,
+            lq.name name,
+            lc.ctype collectionType
+        from
+            lp_question lq
+                left join
+            (select
+                la . *
+            from
+                his_answer la
+            where
+                la.user_id = #{userId} and la.deleted = 1) laa ON lq.id = laa.question_id
+                left join
+            (select
+                lpc.type ctype, lpc.question_id
+            from
+                his_collection lpc
+            where
+                lpc.type = 1 and lpc.user_id = #{userId}
+                    and question_id = #{questionId}) lc ON lc.question_id = lq.id
+        where lq.id = #{questionId}
+    </select>
+  <select id="selectAllQuestionForLimit" resultType="com.hzc.vo.QuestionVO">
+    select
+    <include refid="Base_Column_List_As"/>
+    FROM
+    lp_question
+    limit #{currentNum},#{pageSize}
+  </select>
+  <select id="selectByType" resultType="com.hzc.vo.AnswerCardVO">
+        select
+         lq.id questionId,
+        laa.collect_times collectTimes,
+        laa.answer_times answerTimes,
+        #{userId} userId,
+        lq.type,
+        lq.seq seq,
+        lq.category_code categoryCode
+        from
+        lp_question lq
+        left join
+        (select
+        la.collect_times,la.answer_times,la.question_id
+        from
+        his_answer la
+        where
+        la.user_id = #{userId} and la.deleted = 1) laa ON lq.id = laa.question_id
+        left join
+        (select
+        lpc.type ctype, lpc.question_id
+        from
+        his_collection lpc
+        where
+        lpc.type = 1 and lpc.user_id = #{userId}) lc ON lc.question_id = lq.id where lq.type=#{type}
+    </select>
+  <select id="selectByTypeOptimize" resultType="map">
+        select
+        lq.id questionId,
+        laa.collect_times collectTimes,
+        laa.answer_times answerTimes,
+        lq.seq seq
+        from
+        lp_question lq
+        left join
+        (select
+        la.collect_times,la.answer_times,la.question_id
+        from
+        his_answer la
+        where
+        la.user_id = #{userId} and la.deleted = 1) laa ON lq.id = laa.question_id
+        left join
+        (select
+        lpc.type ctype, lpc.question_id
+        from
+        his_collection lpc
+        where
+        lpc.type = 1 and lpc.user_id = #{userId}) lc ON lc.question_id = lq.id where lq.type=#{type}
+    </select>
+    <select id="selectGroupQuestions" parameterType="com.hzc.model.LpQuestion" resultMap="BaseResultMapVO">
+        SELECT
+        *,'查看选项' opione
+        FROM lp_question
+        WHERE seq IS NOT NULL
+        <if test="question.seq != null">
+            AND seq = #{question.seq}
+        </if>
+        <if test="question.type != null">
+            AND type LIKE concat('%',#{question.type},'%')
+        </if>
+        <if test="question.name != null">
+            AND name LIKE concat('%',#{question.name},'%')
+        </if>
+        ORDER BY id DESC
+    </select>
+    <select id="selectMaxseq" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+        MAX(seq)
+        FROM lp_question
+        WHERE type = #{type}
+    </select>
+</mapper>
