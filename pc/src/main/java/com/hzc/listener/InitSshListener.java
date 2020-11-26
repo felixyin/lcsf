@@ -1,8 +1,8 @@
 package com.hzc.listener;
 
-import com.hzc.framework.ssh.repository.mybatis.MybatisSessionFactory;
-import com.hzc.framework.util.SshConstant;
-import com.hzc.framework.util.PropertiesUtil;
+import com.qtrj.simpleframework.ssh.repository.mybatis.MybatisSessionFactory;
+import com.qtrj.simpleframework.util.SshConstant;
+import com.qtrj.simpleframework.util.PropertiesUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;

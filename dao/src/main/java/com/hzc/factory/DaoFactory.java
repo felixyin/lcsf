@@ -1,6 +1,6 @@
 package com.hzc.factory;
 
-import com.hzc.framework.ssh.service.Context;
+import com.qtrj.simpleframework.ssh.service.Context;
 import com.hzc.dao.*;
 
 /**

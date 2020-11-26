@@ -1,6 +1,6 @@
 package com.hzc.vo;
 
-import com.hzc.framework.ssh.controller.UploadFileCall;
+import com.qtrj.simpleframework.ssh.controller.UploadFileCall;
 import com.hzc.model.SysUser;
 import com.hzc.util.alias.S;
 import org.apache.commons.io.FileUtils;

@@ -1,6 +1,6 @@
 package com.hzc.vo;
 
-import com.hzc.framework.ssh.controller.validate.anno.NotNull;
+import com.qtrj.simpleframework.ssh.controller.validate.anno.NotNull;
 
 /**
  * Created by LiuJY on 2015/4/29.

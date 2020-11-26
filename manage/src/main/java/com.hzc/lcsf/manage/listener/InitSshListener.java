@@ -1,8 +1,8 @@
 package com.hzc.lcsf.manage.listener;
 
-import com.hzc.framework.ssh.repository.mybatis.MybatisSessionFactory;
-import com.hzc.framework.util.PropertiesUtil;
-import com.hzc.framework.util.SshConstant;
+import com.qtrj.simpleframework.ssh.repository.mybatis.MybatisSessionFactory;
+import com.qtrj.simpleframework.util.PropertiesUtil;
+import com.qtrj.simpleframework.util.SshConstant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.io.Resources;

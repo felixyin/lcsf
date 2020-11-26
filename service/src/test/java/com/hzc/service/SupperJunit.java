@@ -1,7 +1,7 @@
 package com.hzc.service;
 
-import com.hzc.framework.ssh.repository.mybatis.MybatisSessionFactory;
-import com.hzc.framework.ssh.service.Context;
+import com.qtrj.simpleframework.ssh.repository.mybatis.MybatisSessionFactory;
+import com.qtrj.simpleframework.ssh.service.Context;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;

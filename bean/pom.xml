@@ -14,9 +14,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.hzc</groupId>
-            <artifactId>hzc-framework</artifactId>
-            <version>1.0</version>
+            <groupId>com.qtrj</groupId>
+            <artifactId>simple-framework</artifactId>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

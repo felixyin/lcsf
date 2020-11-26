@@ -1,7 +1,7 @@
 package com.hzc.service;
 
 import com.hzc.factory.alias.D;
-import com.hzc.framework.ssh.service.Transaction;
+import com.qtrj.simpleframework.ssh.service.Transaction;
 import com.hzc.model.SysCompany;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

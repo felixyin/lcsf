@@ -1,5 +1,5 @@
 package com.hzc.top;
-import com.hzc.framework.ssh.repository.mybatis.MybatisSessionFactory;
+import com.qtrj.simpleframework.ssh.repository.mybatis.MybatisSessionFactory;
 import com.hzc.model.PufaImport;
 import com.hzc.model.SysUser;
 import com.hzc.util.alias.S;

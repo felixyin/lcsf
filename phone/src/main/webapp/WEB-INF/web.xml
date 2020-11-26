@@ -42,7 +42,7 @@
     <!-- 控制层 路由器 -->
     <servlet>
         <servlet-name>RouteServlet</servlet-name>
-        <servlet-class>com.hzc.framework.ssh.controller.RouteServlet</servlet-class>
+        <servlet-class>com.qtrj.simpleframework.ssh.controller.RouteServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RouteServlet</servlet-name>
@@ -56,7 +56,7 @@
     <!-- 编码处理 -->
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>
-        <filter-class>com.hzc.framework.ssh.filter.SetCharacterEncodingFilter</filter-class>
+        <filter-class>com.qtrj.simpleframework.ssh.filter.SetCharacterEncodingFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>CharacterEncodingFilter</filter-name>

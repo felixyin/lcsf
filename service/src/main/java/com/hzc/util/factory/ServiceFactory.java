@@ -9,7 +9,7 @@ import com.hzc.service.*;
 public class ServiceFactory {
 
     public static <T> T get(Class<T> t) {
-        return com.hzc.framework.ssh.service.ServiceFactory.getInstance(t);
+        return com.qtrj.simpleframework.ssh.service.ServiceFactory.getInstance(t);
     }
 
     public static ExamService examService() {

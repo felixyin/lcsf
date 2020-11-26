@@ -31,9 +31,6 @@
             <element id="module-output" name="dao" />
           </element>
           <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.30" />
-          <element id="library" level="project" name="Maven: org.mybatis:mybatis:3.2.6" />
-          <element id="library" level="project" name="Maven: com.github.pagehelper:pagehelper:3.3.1" />
-          <element id="library" level="project" name="Maven: com.github.jsqlparser:jsqlparser:0.9.1" />
           <element id="library" level="project" name="Maven: commons-dbcp:commons-dbcp:1.4" />
           <element id="archive" name="bean-1.0-SNAPSHOT.jar">
             <element id="module-output" name="bean" />
@@ -75,7 +72,11 @@
           <element id="library" level="project" name="Maven: commons-httpclient:commons-httpclient:3.0" />
           <element id="library" level="project" name="Maven: commons-io:commons-io:2.2" />
           <element id="library" level="project" name="Maven: commons-pool:commons-pool:1.5.6" />
-          <element id="library" level="project" name="Maven: com.hzc:hzc-framework:1.0" />
+          <element id="library" level="project" name="Maven: com.qtrj:simple-framework:1.1-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: org.mybatis:mybatis:3.2.6" />
+          <element id="library" level="project" name="Maven: com.github.pagehelper:pagehelper:3.3.1" />
+          <element id="library" level="project" name="Maven: com.github.jsqlparser:jsqlparser:0.9.1" />
+          <element id="library" level="project" name="Maven: com.danga:memcached:2.6.6" />
         </element>
       </element>
       <element id="directory" name="META-INF">

@@ -1,6 +1,6 @@
 package com.hzc.service;
 
-import com.hzc.framework.ssh.service.Transaction;
+import com.qtrj.simpleframework.ssh.service.Transaction;
 import com.hzc.model.HisCollection;
 import com.hzc.model.SysUser;
 import com.hzc.factory.alias.D;

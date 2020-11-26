@@ -1,6 +1,6 @@
 package com.hzc.ctrl;
 
-import com.hzc.framework.ssh.repository.mybatis.DataTablePager;
+import com.qtrj.simpleframework.ssh.repository.mybatis.DataTablePager;
 import com.hzc.model.HisPaper;
 import com.hzc.model.HisPaperItem;
 import com.hzc.model.SysResource;

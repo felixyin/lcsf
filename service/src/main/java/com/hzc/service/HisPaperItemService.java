@@ -1,8 +1,8 @@
 package com.hzc.service;
 
 import com.hzc.factory.alias.D;
-import com.hzc.framework.ssh.service.TrancationType;
-import com.hzc.framework.ssh.service.Transaction;
+import com.qtrj.simpleframework.ssh.service.TrancationType;
+import com.qtrj.simpleframework.ssh.service.Transaction;
 import com.hzc.model.HisPaper;
 import com.hzc.model.LpOption;
 import com.hzc.vo.HisPaperItemVO;

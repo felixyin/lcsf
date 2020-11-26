@@ -1,6 +1,6 @@
 package com.hzc.util;
 
-import com.hzc.framework.ssh.controller.WebUtil;
+import com.qtrj.simpleframework.ssh.controller.WebUtil;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;

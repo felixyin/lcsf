@@ -1,5 +1,5 @@
 package com.hzc.top;
-import com.hzc.framework.ssh.repository.mybatis.MybatisSessionFactory;
+import com.qtrj.simpleframework.ssh.repository.mybatis.MybatisSessionFactory;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;

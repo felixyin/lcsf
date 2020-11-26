@@ -1,6 +1,6 @@
 package com.hzc.util.alias;
 
-import com.hzc.framework.ssh.controller.WebUtil;
+import com.qtrj.simpleframework.ssh.controller.WebUtil;
 
 
 /**
